@@ -851,33 +851,51 @@
                class="code sev- "><tt><i>269</i>                     <span class="n">file_suffix</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">stage_file_path</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span></tt>
             </div>
             <div id="l270"
-               class="code sev- "><tt><i>270</i>                     <span class="c1"># Create the new file name with the part pattern</span></tt>
+               class="code sev-2  le">
+               <ul class="violations">
+               
+                  <li>
+                     <span class="count sev-2">
+                        W293
+                     </span>
+                     Blank line contains whitespace</li>
+               
+               </ul><tt><i>270</i>                     </tt>
             </div>
             <div id="l271"
-               class="code sev- "><tt><i>271</i>                     <span class="k">if</span> <span class="n">part_pattern</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>271</i>                     <span class="c1"># Rename all output files except checkpoint files</span></tt>
             </div>
             <div id="l272"
-               class="code sev- "><tt><i>272</i>                         <span class="n">new_file_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_stem</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">part_pattern</span><span class="si">}{</span><span class="n">file_suffix</span><span class="si">}</span><span class="s2">&quot;</span></tt>
+               class="code sev- "><tt><i>272</i>                     <span class="k">if</span> <span class="n">file_suffix</span> <span class="o">!=</span> <span class="s1">&#39;.cpt&#39;</span><span class="p">:</span></tt>
             </div>
             <div id="l273"
-               class="code sev- "><tt><i>273</i>                         <span class="n">new_file_path</span> <span class="o">=</span> <span class="n">parent_path</span> <span class="o">/</span> <span class="n">new_file_name</span></tt>
+               class="code sev- "><tt><i>273</i>                         <span class="c1"># Create the new file name with the part pattern</span></tt>
             </div>
             <div id="l274"
-               class="code sev- "><tt><i>274</i>                         <span class="c1"># Update the stage_io_dict with the new file path</span></tt>
+               class="code sev- "><tt><i>274</i>                         <span class="k">if</span> <span class="n">part_pattern</span><span class="p">:</span></tt>
             </div>
             <div id="l275"
-               class="code sev- "><tt><i>275</i>                         <span class="bp">self</span><span class="o">.</span><span class="n">stage_io_dict</span><span class="p">[</span><span class="s2">&quot;out&quot;</span><span class="p">][</span><span class="n">file_ref</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">new_file_path</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>275</i>                             <span class="n">new_file_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_stem</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">part_pattern</span><span class="si">}{</span><span class="n">file_suffix</span><span class="si">}</span><span class="s2">&quot;</span></tt>
             </div>
             <div id="l276"
-               class="code sev- "><tt><i>276</i> &nbsp;</tt>
+               class="code sev- "><tt><i>276</i>                             <span class="n">new_file_path</span> <span class="o">=</span> <span class="n">parent_path</span> <span class="o">/</span> <span class="n">new_file_name</span></tt>
             </div>
             <div id="l277"
-               class="code sev- "><tt><i>277</i>         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">copy_to_host</span><span class="p">()</span></tt>
+               class="code sev- "><tt><i>277</i>                             <span class="c1"># Update the stage_io_dict with the new file path</span></tt>
             </div>
             <div id="l278"
-               class="code sev- "><tt><i>278</i> &nbsp;</tt>
+               class="code sev- "><tt><i>278</i>                             <span class="bp">self</span><span class="o">.</span><span class="n">stage_io_dict</span><span class="p">[</span><span class="s2">&quot;out&quot;</span><span class="p">][</span><span class="n">file_ref</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">new_file_path</span><span class="p">)</span></tt>
             </div>
             <div id="l279"
+               class="code sev- "><tt><i>279</i> &nbsp;</tt>
+            </div>
+            <div id="l280"
+               class="code sev- "><tt><i>280</i>         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">copy_to_host</span><span class="p">()</span></tt>
+            </div>
+            <div id="l281"
+               class="code sev- "><tt><i>281</i> &nbsp;</tt>
+            </div>
+            <div id="l282"
                class="code sev-2  le">
                <ul class="violations">
                
@@ -887,52 +905,43 @@
                      </span>
                      Expected 2 blank lines, found 1</li>
                
-               </ul><tt><i>279</i> <span class="k">def</span><span class="w"> </span><span class="nf">mdrun</span><span class="p">(</span><span class="n">input_tpr_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_gro_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_edr_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span></tt>
-            </div>
-            <div id="l280"
-               class="code sev- "><tt><i>280</i>           <span class="n">output_log_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_trr_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">input_cpt_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span></tt>
-            </div>
-            <div id="l281"
-               class="code sev- "><tt><i>281</i>           <span class="n">output_xtc_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">output_cpt_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span></tt>
-            </div>
-            <div id="l282"
-               class="code sev- "><tt><i>282</i>           <span class="n">output_dhdl_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">properties</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span></tt>
+               </ul><tt><i>282</i> <span class="k">def</span><span class="w"> </span><span class="nf">mdrun</span><span class="p">(</span><span class="n">input_tpr_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_gro_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_edr_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span></tt>
             </div>
             <div id="l283"
-               class="code sev- "><tt><i>283</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create :class:`Mdrun &lt;gromacs.mdrun.Mdrun&gt;` class and</span></tt>
+               class="code sev- "><tt><i>283</i>           <span class="n">output_log_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_trr_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">input_cpt_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span></tt>
             </div>
             <div id="l284"
-               class="code sev- "><tt><i>284</i> <span class="sd">    execute the :meth:`launch() &lt;gromacs.mdrun.Mdrun.launch&gt;` method.&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>284</i>           <span class="n">output_xtc_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">output_cpt_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span></tt>
             </div>
             <div id="l285"
-               class="code sev- "><tt><i>285</i> &nbsp;</tt>
+               class="code sev- "><tt><i>285</i>           <span class="n">output_dhdl_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">properties</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span></tt>
             </div>
             <div id="l286"
-               class="code sev- "><tt><i>286</i>     <span class="k">return</span> <span class="n">Mdrun</span><span class="p">(</span><span class="n">input_tpr_path</span><span class="o">=</span><span class="n">input_tpr_path</span><span class="p">,</span> <span class="n">output_trr_path</span><span class="o">=</span><span class="n">output_trr_path</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>286</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;Create :class:`Mdrun &lt;gromacs.mdrun.Mdrun&gt;` class and</span></tt>
             </div>
             <div id="l287"
-               class="code sev- "><tt><i>287</i>                  <span class="n">output_gro_path</span><span class="o">=</span><span class="n">output_gro_path</span><span class="p">,</span> <span class="n">output_edr_path</span><span class="o">=</span><span class="n">output_edr_path</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>287</i> <span class="sd">    execute the :meth:`launch() &lt;gromacs.mdrun.Mdrun.launch&gt;` method.&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l288"
-               class="code sev- "><tt><i>288</i>                  <span class="n">output_log_path</span><span class="o">=</span><span class="n">output_log_path</span><span class="p">,</span> <span class="n">input_cpt_path</span><span class="o">=</span><span class="n">input_cpt_path</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>288</i> &nbsp;</tt>
             </div>
             <div id="l289"
-               class="code sev- "><tt><i>289</i>                  <span class="n">output_xtc_path</span><span class="o">=</span><span class="n">output_xtc_path</span><span class="p">,</span> <span class="n">output_cpt_path</span><span class="o">=</span><span class="n">output_cpt_path</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>289</i>     <span class="k">return</span> <span class="n">Mdrun</span><span class="p">(</span><span class="n">input_tpr_path</span><span class="o">=</span><span class="n">input_tpr_path</span><span class="p">,</span> <span class="n">output_trr_path</span><span class="o">=</span><span class="n">output_trr_path</span><span class="p">,</span></tt>
             </div>
             <div id="l290"
-               class="code sev- "><tt><i>290</i>                  <span class="n">output_dhdl_path</span><span class="o">=</span><span class="n">output_dhdl_path</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="n">properties</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>290</i>                  <span class="n">output_gro_path</span><span class="o">=</span><span class="n">output_gro_path</span><span class="p">,</span> <span class="n">output_edr_path</span><span class="o">=</span><span class="n">output_edr_path</span><span class="p">,</span></tt>
             </div>
             <div id="l291"
-               class="code sev- "><tt><i>291</i>                  <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span></tt>
+               class="code sev- "><tt><i>291</i>                  <span class="n">output_log_path</span><span class="o">=</span><span class="n">output_log_path</span><span class="p">,</span> <span class="n">input_cpt_path</span><span class="o">=</span><span class="n">input_cpt_path</span><span class="p">,</span></tt>
             </div>
             <div id="l292"
-               class="code sev- "><tt><i>292</i> &nbsp;</tt>
+               class="code sev- "><tt><i>292</i>                  <span class="n">output_xtc_path</span><span class="o">=</span><span class="n">output_xtc_path</span><span class="p">,</span> <span class="n">output_cpt_path</span><span class="o">=</span><span class="n">output_cpt_path</span><span class="p">,</span></tt>
             </div>
             <div id="l293"
-               class="code sev- "><tt><i>293</i> &nbsp;</tt>
+               class="code sev- "><tt><i>293</i>                  <span class="n">output_dhdl_path</span><span class="o">=</span><span class="n">output_dhdl_path</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="n">properties</span><span class="p">,</span></tt>
             </div>
             <div id="l294"
-               class="code sev- "><tt><i>294</i> <span class="n">mdrun</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">Mdrun</span><span class="o">.</span><span class="vm">__doc__</span></tt>
+               class="code sev- "><tt><i>294</i>                  <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">launch</span><span class="p">()</span></tt>
             </div>
             <div id="l295"
                class="code sev- "><tt><i>295</i> &nbsp;</tt>
@@ -941,100 +950,109 @@
                class="code sev- "><tt><i>296</i> &nbsp;</tt>
             </div>
             <div id="l297"
-               class="code sev- "><tt><i>297</i> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span></tt>
+               class="code sev- "><tt><i>297</i> <span class="n">mdrun</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">Mdrun</span><span class="o">.</span><span class="vm">__doc__</span></tt>
             </div>
             <div id="l298"
-               class="code sev- "><tt><i>298</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;Command line execution of this building block. Please check the command line documentation.&quot;&quot;&quot;</span></tt>
+               class="code sev- "><tt><i>298</i> &nbsp;</tt>
             </div>
             <div id="l299"
-               class="code sev- "><tt><i>299</i>     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Wrapper for the GROMACS mdrun module.&quot;</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>299</i> &nbsp;</tt>
             </div>
             <div id="l300"
-               class="code sev- "><tt><i>300</i>                                      <span class="n">formatter_class</span><span class="o">=</span><span class="k">lambda</span> <span class="n">prog</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">RawTextHelpFormatter</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">99999</span><span class="p">))</span></tt>
+               class="code sev- "><tt><i>300</i> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span></tt>
             </div>
             <div id="l301"
-               class="code sev- "><tt><i>301</i>     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-c&#39;</span><span class="p">,</span> <span class="s1">&#39;--config&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;This file can be a YAML file, JSON file or JSON string&quot;</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>301</i> <span class="w">    </span><span class="sd">&quot;&quot;&quot;Command line execution of this building block. Please check the command line documentation.&quot;&quot;&quot;</span></tt>
             </div>
             <div id="l302"
-               class="code sev- "><tt><i>302</i> &nbsp;</tt>
+               class="code sev- "><tt><i>302</i>     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Wrapper for the GROMACS mdrun module.&quot;</span><span class="p">,</span></tt>
             </div>
             <div id="l303"
-               class="code sev- "><tt><i>303</i>     <span class="c1"># Specific args of each building block</span></tt>
+               class="code sev- "><tt><i>303</i>                                      <span class="n">formatter_class</span><span class="o">=</span><span class="k">lambda</span> <span class="n">prog</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">RawTextHelpFormatter</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">99999</span><span class="p">))</span></tt>
             </div>
             <div id="l304"
-               class="code sev- "><tt><i>304</i>     <span class="n">required_args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s1">&#39;required arguments&#39;</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>304</i>     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-c&#39;</span><span class="p">,</span> <span class="s1">&#39;--config&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;This file can be a YAML file, JSON file or JSON string&quot;</span><span class="p">)</span></tt>
             </div>
             <div id="l305"
-               class="code sev- "><tt><i>305</i>     <span class="n">required_args</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--input_tpr_path&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>305</i> &nbsp;</tt>
             </div>
             <div id="l306"
-               class="code sev- "><tt><i>306</i>     <span class="n">required_args</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--output_gro_path&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>306</i>     <span class="c1"># Specific args of each building block</span></tt>
             </div>
             <div id="l307"
-               class="code sev- "><tt><i>307</i>     <span class="n">required_args</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--output_edr_path&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>307</i>     <span class="n">required_args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s1">&#39;required arguments&#39;</span><span class="p">)</span></tt>
             </div>
             <div id="l308"
-               class="code sev- "><tt><i>308</i>     <span class="n">required_args</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--output_log_path&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>308</i>     <span class="n">required_args</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--input_tpr_path&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
             </div>
             <div id="l309"
-               class="code sev- "><tt><i>309</i>     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--output_trr_path&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>309</i>     <span class="n">required_args</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--output_gro_path&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
             </div>
             <div id="l310"
-               class="code sev- "><tt><i>310</i>     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--input_cpt_path&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>310</i>     <span class="n">required_args</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--output_edr_path&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
             </div>
             <div id="l311"
-               class="code sev- "><tt><i>311</i>     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--output_xtc_path&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>311</i>     <span class="n">required_args</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--output_log_path&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></tt>
             </div>
             <div id="l312"
-               class="code sev- "><tt><i>312</i>     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--output_cpt_path&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>312</i>     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--output_trr_path&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></tt>
             </div>
             <div id="l313"
-               class="code sev- "><tt><i>313</i>     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--output_dhdl_path&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>313</i>     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--input_cpt_path&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></tt>
             </div>
             <div id="l314"
-               class="code sev- "><tt><i>314</i> &nbsp;</tt>
+               class="code sev- "><tt><i>314</i>     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--output_xtc_path&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></tt>
             </div>
             <div id="l315"
-               class="code sev- "><tt><i>315</i>     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span></tt>
+               class="code sev- "><tt><i>315</i>     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--output_cpt_path&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></tt>
             </div>
             <div id="l316"
-               class="code sev- "><tt><i>316</i>     <span class="n">config</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">config</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">config</span> <span class="k">else</span> <span class="kc">None</span></tt>
+               class="code sev- "><tt><i>316</i>     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--output_dhdl_path&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></tt>
             </div>
             <div id="l317"
-               class="code sev- "><tt><i>317</i>     <span class="n">properties</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">ConfReader</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span><span class="o">.</span><span class="n">get_prop_dic</span><span class="p">()</span></tt>
+               class="code sev- "><tt><i>317</i> &nbsp;</tt>
             </div>
             <div id="l318"
-               class="code sev- "><tt><i>318</i> &nbsp;</tt>
+               class="code sev- "><tt><i>318</i>     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span></tt>
             </div>
             <div id="l319"
-               class="code sev- "><tt><i>319</i>     <span class="c1"># Specific call of each building block</span></tt>
+               class="code sev- "><tt><i>319</i>     <span class="n">config</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">config</span> <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">config</span> <span class="k">else</span> <span class="kc">None</span></tt>
             </div>
             <div id="l320"
-               class="code sev- "><tt><i>320</i>     <span class="n">mdrun</span><span class="p">(</span><span class="n">input_tpr_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">input_tpr_path</span><span class="p">,</span> <span class="n">output_trr_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output_trr_path</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>320</i>     <span class="n">properties</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">ConfReader</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span><span class="o">.</span><span class="n">get_prop_dic</span><span class="p">()</span></tt>
             </div>
             <div id="l321"
-               class="code sev- "><tt><i>321</i>           <span class="n">output_gro_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output_gro_path</span><span class="p">,</span> <span class="n">output_edr_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output_edr_path</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>321</i> &nbsp;</tt>
             </div>
             <div id="l322"
-               class="code sev- "><tt><i>322</i>           <span class="n">output_log_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output_log_path</span><span class="p">,</span> <span class="n">input_cpt_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">input_cpt_path</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>322</i>     <span class="c1"># Specific call of each building block</span></tt>
             </div>
             <div id="l323"
-               class="code sev- "><tt><i>323</i>           <span class="n">output_xtc_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output_xtc_path</span><span class="p">,</span> <span class="n">output_cpt_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output_cpt_path</span><span class="p">,</span></tt>
+               class="code sev- "><tt><i>323</i>     <span class="n">mdrun</span><span class="p">(</span><span class="n">input_tpr_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">input_tpr_path</span><span class="p">,</span> <span class="n">output_trr_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output_trr_path</span><span class="p">,</span></tt>
             </div>
             <div id="l324"
-               class="code sev- "><tt><i>324</i>           <span class="n">output_dhdl_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output_dhdl_path</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="n">properties</span><span class="p">)</span></tt>
+               class="code sev- "><tt><i>324</i>           <span class="n">output_gro_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output_gro_path</span><span class="p">,</span> <span class="n">output_edr_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output_edr_path</span><span class="p">,</span></tt>
             </div>
             <div id="l325"
-               class="code sev- "><tt><i>325</i> &nbsp;</tt>
+               class="code sev- "><tt><i>325</i>           <span class="n">output_log_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output_log_path</span><span class="p">,</span> <span class="n">input_cpt_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">input_cpt_path</span><span class="p">,</span></tt>
             </div>
             <div id="l326"
-               class="code sev- "><tt><i>326</i> &nbsp;</tt>
+               class="code sev- "><tt><i>326</i>           <span class="n">output_xtc_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output_xtc_path</span><span class="p">,</span> <span class="n">output_cpt_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output_cpt_path</span><span class="p">,</span></tt>
             </div>
             <div id="l327"
-               class="code sev- "><tt><i>327</i> <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span></tt>
+               class="code sev- "><tt><i>327</i>           <span class="n">output_dhdl_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output_dhdl_path</span><span class="p">,</span> <span class="n">properties</span><span class="o">=</span><span class="n">properties</span><span class="p">)</span></tt>
             </div>
             <div id="l328"
-               class="code sev- "><tt><i>328</i>     <span class="n">main</span><span class="p">()</span></tt>
+               class="code sev- "><tt><i>328</i> &nbsp;</tt>
+            </div>
+            <div id="l329"
+               class="code sev- "><tt><i>329</i> &nbsp;</tt>
+            </div>
+            <div id="l330"
+               class="code sev- "><tt><i>330</i> <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span></tt>
+            </div>
+            <div id="l331"
+               class="code sev- "><tt><i>331</i>     <span class="n">main</span><span class="p">()</span></tt>
             </div>
             
          </div>
