@@ -3,5 +3,4 @@ properties:
   container_path: singularity
   container_volume_path: /tmp
   container_working_dir: /tmp
-  force_constants: 500 500 500
-  restrained_group: system
+  nsteps: 100

@@ -2,9 +2,5 @@ properties:
   container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
   container_volume_path: /tmp
-  container_working_dir: /tmp21.4
-  selection: 'a C*
-
-    0 & ! 13
-
-    name 14 FREEZE'
+  container_working_dir: /tmp
+  nsteps: 100

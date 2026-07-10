@@ -131,17 +131,23 @@ properties:
 #### [Docker config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_editconf_docker.yml)
 ```python
 properties:
-  container_image: gromacs/gromacs:2025.2
+  box_type: cubic
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
   container_volume_path: /tmp
+  container_working_dir: /tmp
+  distance_to_molecule: 1.0
 
 ```
 #### [Singularity config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_editconf_singularity.yml)
 ```python
 properties:
-  container_image: gromacs.simg
+  box_type: cubic
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
   container_volume_path: /tmp
+  container_working_dir: /tmp
+  distance_to_molecule: 1.0
 
 ```
 #### Command line
@@ -162,9 +168,12 @@ editconf --config config_editconf.yml --input_gro_path editconf.gro --output_gro
 ```python
 {
   "properties": {
+    "distance_to_molecule": 1.0,
+    "box_type": "cubic",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/tmp"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -172,9 +181,12 @@ editconf --config config_editconf.yml --input_gro_path editconf.gro --output_gro
 ```python
 {
   "properties": {
+    "distance_to_molecule": 1.0,
+    "box_type": "cubic",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/tmp"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -251,19 +263,23 @@ properties:
 #### [Docker config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_genion_docker.yml)
 ```python
 properties:
-  container_image: gromacs/gromacs:2025.2
+  concentration: 0.05
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
-  container_volume_path: /data
-  container_working_dir: /data
+  container_volume_path: /tmp
+  container_working_dir: /tmp
+  replaced_group: SOL
 
 ```
 #### [Singularity config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_genion_singularity.yml)
 ```python
 properties:
-  container_image: gromacs.simg
+  concentration: 0.05
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
-  container_volume_path: /data
-  container_working_dir: /data
+  container_volume_path: /tmp
+  container_working_dir: /tmp
+  replaced_group: SOL
 
 ```
 #### Command line
@@ -284,10 +300,12 @@ genion --config config_genion.yml --input_tpr_path genion.tpr --output_gro_path 
 ```python
 {
   "properties": {
+    "concentration": 0.05,
+    "replaced_group": "SOL",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/data",
-    "container_working_dir": "/data"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -295,10 +313,12 @@ genion --config config_genion.yml --input_tpr_path genion.tpr --output_gro_path 
 ```python
 {
   "properties": {
+    "concentration": 0.05,
+    "replaced_group": "SOL",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/data",
-    "container_working_dir": "/data"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -367,19 +387,23 @@ properties:
 #### [Docker config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_genrestr_docker.yml)
 ```python
 properties:
-  container_image: gromacs/gromacs:2025.2
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
-  container_volume_path: /data
-  container_working_dir: /data
+  container_volume_path: /tmp
+  container_working_dir: /tmp
+  force_constants: 500 500 500
+  restrained_group: system
 
 ```
 #### [Singularity config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_genrestr_singularity.yml)
 ```python
 properties:
-  container_image: gromacs.simg
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
-  container_volume_path: /data
-  container_working_dir: /data
+  container_volume_path: /tmp
+  container_working_dir: /tmp
+  force_constants: 500 500 500
+  restrained_group: system
 
 ```
 #### Command line
@@ -400,10 +424,12 @@ genrestr --config config_genrestr.yml --input_structure_path genrestr.gro --outp
 ```python
 {
   "properties": {
+    "restrained_group": "system",
+    "force_constants": "500 500 500",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/data",
-    "container_working_dir": "/data"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -411,10 +437,12 @@ genrestr --config config_genrestr.yml --input_structure_path genrestr.gro --outp
 ```python
 {
   "properties": {
+    "restrained_group": "system",
+    "force_constants": "500 500 500",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/data",
-    "container_working_dir": "/data"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -483,19 +511,21 @@ properties:
 #### [Docker config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_gmxselect_docker.yml)
 ```python
 properties:
-  container_image: gromacs/gromacs:2025.2
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
-  container_volume_path: /inout
-  selection: \"Mynewgroup\" group \"Protein-H\" and not same residue as within 0.4
-    of resname ARG
+  container_volume_path: /tmp
+  container_working_dir: /tmp
+  selection: '"Mynewgroup" group "Protein-H" and not same residue as within 0.4 of
+    resname ARG'
 
 ```
 #### [Singularity config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_gmxselect_singularity.yml)
 ```python
 properties:
-  container_image: gromacs.simg
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
   selection: '"Mynewgroup" group "Protein-H" and not same residue as within 0.4 of
     resname ARG'
 
@@ -517,10 +547,11 @@ gmxselect --config config_gmxselect.yml --input_structure_path make_ndx.tpr --ou
 ```python
 {
   "properties": {
-    "selection": "\\\"Mynewgroup\\\" group \\\"Protein-H\\\" and not same residue as within 0.4 of resname ARG",
+    "selection": "\"Mynewgroup\" group \"Protein-H\" and not same residue as within 0.4 of resname ARG",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/inout"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -530,8 +561,9 @@ gmxselect --config config_gmxselect.yml --input_structure_path make_ndx.tpr --ou
   "properties": {
     "selection": "\"Mynewgroup\" group \"Protein-H\" and not same residue as within 0.4 of resname ARG",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/inout"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -611,9 +643,10 @@ properties:
 #### [Docker config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_grompp_docker.yml)
 ```python
 properties:
-  container_image: gromacs/gromacs:2025.2
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
   container_volume_path: /tmp
+  container_working_dir: /tmp
   maxwarn: 1
   mdp:
     ld-seed: '1'
@@ -622,10 +655,10 @@ properties:
 #### [Singularity config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_grompp_singularity.yml)
 ```python
 properties:
-  container_image: gromacs.simg
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
-  container_volume_path: /inout
-  container_working_dir: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
   maxwarn: 1
   mdp:
     ld-seed: '1'
@@ -656,8 +689,9 @@ grompp --config config_grompp.yml --input_gro_path grompp.gro --input_top_zip_pa
       "ld-seed": "1"
     },
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/tmp"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -670,9 +704,9 @@ grompp --config config_grompp.yml --input_gro_path grompp.gro --input_top_zip_pa
       "ld-seed": "1"
     },
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/inout",
-    "container_working_dir": "/inout"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -786,9 +820,10 @@ properties:
 ```python
 properties:
   binary_path: gmx
-  container_image: gromacs/gromacs:2025.2
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
   maxwarn: 1
   mdp:
     dt: 0.0001
@@ -801,9 +836,10 @@ properties:
 ```python
 properties:
   binary_path: gmx
-  container_image: gromacs.simg
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
   mdp:
     dt: 0.0001
     ld-seed: '1'
@@ -844,8 +880,9 @@ grompp_mdrun --config config_grompp_mdrun.yml --input_gro_path grompp.gro --inpu
     "num_threads": 0,
     "binary_path": "gmx",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/inout"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -861,8 +898,9 @@ grompp_mdrun --config config_grompp_mdrun.yml --input_gro_path grompp.gro --inpu
     "num_threads": 0,
     "binary_path": "gmx",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/inout"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -933,17 +971,29 @@ properties:
 #### [Docker config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_make_ndx_docker.yml)
 ```python
 properties:
-  container_image: gromacs/gromacs:2025.2
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
   container_volume_path: /tmp
+  container_working_dir: /tmp21.4
+  selection: 'a C*
+
+    0 & ! 13
+
+    name 14 FREEZE'
 
 ```
 #### [Singularity config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_make_ndx_singularity.yml)
 ```python
 properties:
-  container_image: gromacs.simg
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
   container_volume_path: /tmp
+  container_working_dir: /tmp
+  selection: 'a C*
+
+    0 & ! 13
+
+    name 14 FREEZE'
 
 ```
 #### Command line
@@ -963,9 +1013,11 @@ make_ndx --config config_make_ndx.yml --input_structure_path make_ndx.tpr --outp
 ```python
 {
   "properties": {
+    "selection": "a C*\n0 & ! 13\nname 14 FREEZE",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/tmp"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp21.4"
   }
 }
 ```
@@ -973,9 +1025,11 @@ make_ndx --config config_make_ndx.yml --input_structure_path make_ndx.tpr --outp
 ```python
 {
   "properties": {
+    "selection": "a C*\n0 & ! 13\nname 14 FREEZE",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/tmp"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -1072,17 +1126,23 @@ properties:
 #### [Docker config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_mdrun_docker.yml)
 ```python
 properties:
-  container_image: gromacs/gromacs:2025.2
+  binary_path: gmx
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
+  num_threads: 0
 
 ```
 #### [Singularity config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_mdrun_singularity.yml)
 ```python
 properties:
-  container_image: gromacs.simg
+  binary_path: gmx
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
+  num_threads: 0
 
 ```
 #### Command line
@@ -1103,9 +1163,12 @@ mdrun --config config_mdrun.yml --input_tpr_path mdrun.tpr --output_gro_path ref
 ```python
 {
   "properties": {
+    "num_threads": 0,
+    "binary_path": "gmx",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/inout"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -1113,9 +1176,12 @@ mdrun --config config_mdrun.yml --input_tpr_path mdrun.tpr --output_gro_path ref
 ```python
 {
   "properties": {
+    "num_threads": 0,
+    "binary_path": "gmx",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/inout"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -1301,7 +1367,7 @@ Syntax: input_parameter (datatype) - (default_value) Definition
 Config parameters for this building block:
 * **water_type** (*string*): (spce) Water molecule type. 
 * **force_field** (*string*): (amber99sb-ildn) Force field to be used during the conversion.  
-* **ignh** (*boolean*): (False) Should pdb2gmx ignore the hidrogens in the original structure.
+* **ignh** (*boolean*): (False) Should pdb2gmx ignore the hydrogens in the original structure.
 * **lys** (*array*): (None) Lysine protonation states for each chain in the input pdb. Each item of the list should be a string with the protonation states for that chain or empty if the residue is not present in that chain (0: not protonated, 1: protonated).
 * **arg** (*array*): (None) Arginine protonation states for each chain in the input pdb. Each item of the list should be a string with the protonation states for that chain or empty if the residue is not present in that chain (0: not protonated, 1: protonated).
 * **asp** (*array*): (None) Aspartic acid protonation states for each chain in the input pdb. Each item of the list should be a string with the protonation states for that chain or empty if the residue is not present in that chain (0: not protonated, 1: protonated).
@@ -1330,18 +1396,20 @@ properties:
 #### [Docker config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_pdb2gmx_docker.yml)
 ```python
 properties:
-  container_image: gromacs/gromacs:2025.2
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
   his: 0 0 1 1 0 0 0
 
 ```
 #### [Singularity config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_pdb2gmx_singularity.yml)
 ```python
 properties:
-  container_image: gromacs.simg
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
   his: 0 0 1 1 0 0 0
 
 ```
@@ -1364,8 +1432,9 @@ pdb2gmx --config config_pdb2gmx.yml --input_pdb_path egfr.pdb --output_gro_path 
   "properties": {
     "his": "0 0 1 1 0 0 0",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/inout"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -1375,8 +1444,9 @@ pdb2gmx --config config_pdb2gmx.yml --input_pdb_path egfr.pdb --output_gro_path 
   "properties": {
     "his": "0 0 1 1 0 0 0",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/inout"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -1450,17 +1520,23 @@ properties:
 #### [Docker config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_solvate_docker.yml)
 ```python
 properties:
-  container_image: gromacs/gromacs:2025.2
+  binary_path: gmx
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
+  restart: 'False'
 
 ```
 #### [Singularity config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_solvate_singularity.yml)
 ```python
 properties:
-  container_image: gromacs.simg
+  binary_path: gmx
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
+  restart: 'False'
 
 ```
 #### Command line
@@ -1481,9 +1557,12 @@ solvate --config config_solvate.yml --input_solute_gro_path solvate.gro --output
 ```python
 {
   "properties": {
+    "binary_path": "gmx",
+    "restart": "False",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/inout"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -1491,9 +1570,12 @@ solvate --config config_solvate.yml --input_solute_gro_path solvate.gro --output
 ```python
 {
   "properties": {
+    "binary_path": "gmx",
+    "restart": "False",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/inout"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -1557,9 +1639,10 @@ properties:
 ```python
 properties:
   binary_path: gmx
-  container_image: gromacs/gromacs:2025.2
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
   restart: 'False'
 
 ```
@@ -1567,9 +1650,10 @@ properties:
 ```python
 properties:
   binary_path: gmx
-  container_image: gromacs.simg
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
   restart: 'False'
 
 ```
@@ -1594,8 +1678,9 @@ trjcat --config config_trjcat.yml --input_trj_zip_path trjcat.zip --output_trj_p
     "binary_path": "gmx",
     "restart": "False",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/inout"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -1606,8 +1691,9 @@ trjcat --config config_trjcat.yml --input_trj_zip_path trjcat.zip --output_trj_p
     "binary_path": "gmx",
     "restart": "False",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/inout"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
