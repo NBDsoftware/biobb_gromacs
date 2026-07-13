@@ -122,7 +122,7 @@ class Grompp(BiobbObject):
         # Create MDP file
         self.output_mdp_path = create_mdp(output_mdp_path=str(Path(self.stage_io_dict.get("unique_dir", "")).joinpath(self.output_mdp_path)),
                                           input_mdp_path=self.io_dict["in"]["input_mdp_path"],
-                                          preset_dict=mdp_preset(str(self.simulation_type)),
+                                          preset_dict=mdp_preset(self.simulation_type),
                                           mdp_properties_dict=self.mdp)
 
         if self.container_path:
@@ -148,7 +148,7 @@ class Grompp(BiobbObject):
             self.cmd.append(PurePath(self.stage_io_dict["in"]["input_ndx_path"]).name)
 
         if self.gmx_lib:
-            self.env_vars_dict['GMXLIB'] = self.gmx_lib
+            self.env_vars_dict['GMXLIB'] = Path(self.gmx_lib).resolve()
 
         # Run Biobb block
         self.run_biobb()
