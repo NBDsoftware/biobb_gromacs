@@ -104,7 +104,7 @@ class Ndx2resttop(BiobbObject):
 
             # If we reach the last line of the file, set the ending line of the last group
             if index == len(ndx_lines)-1:
-                groups_dic[current_group][1] = index
+                groups_dic[current_group][1] = index + 1
 
         # Catch groups with just one line
         for group_name in groups_dic.keys():
