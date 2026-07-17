@@ -23,15 +23,15 @@ class Ndx2resttop(BiobbObject):
         input_top_zip_path (str): Path the input TOP topology in zip format. File type: input. `Sample file <https://github.com/bioexcel/biobb_gromacs/raw/master/biobb_gromacs/test/data/gromacs_extra/ndx2resttop.zip>`_. Accepted formats: zip (edam:format_3987).
         output_top_zip_path (str): Path the output TOP topology in zip format. File type: output. `Sample file <https://github.com/bioexcel/biobb_gromacs/raw/master/biobb_gromacs/test/reference/gromacs_extra/ref_ndx2resttop.zip>`_. Accepted formats: zip (edam:format_3987).
         properties (dict - Python dictionary object containing the tool parameters, not input/output files):
-            * **posres_names** (*list*) - ("CUSTOM_POSRES") String with names of the position restraints to be included in the topology file separated by spaces. If provided it should match the length of the ref_rest_chain_triplet_list.
-            * **force_constants** (*str*) - ("500 500 500") Array of three floats defining the force constants.
-            * **ref_rest_chain_triplet_list** (*str*) - (None) Triplet list composed by (reference group, restrain group, chain) list.
+            * **posres_names** (*str*) - ("CUSTOM_POSRES") Space-separated preprocessor macro names, one per triplet (e.g. ``"CHAIN_A_POSRES CHAIN_B_POSRES"``). Activated at grompp time via ``-D <name>``. Must match the length of ref_rest_mol_triplet_list.
+            * **force_constants** (*str*) - ("500 500 500") Three space-separated force constants Fx Fy Fz in kJ/mol/nm². Written verbatim into each ITP line so the same value is applied to every restrained atom.
+            * **ref_rest_mol_triplet_list** (*str*) - (None) Comma-separated triplets ``(reference_group, restrain_group, molecule_name)``, one per molecule to restrain.``reference_group``: NDX group containing *all* atoms of the molecule in global (system-wide) GROMACS numbering. Used only as a coordinate frame to convert global indices to molecule-local 1-based indices. Example: ``r_1-9280``. ``restrain_group``: NDX group with the subset of atoms to actually restrain (must be a strict subset of reference_group). Example: ``P_&_r_1-9280``. ``molecule_name``: the ``[ moleculetype ]`` name in the topology used to locate where to splice the ``#ifdef`` block. Example: ``1TSR``.
 
     Examples:
         This is a use example of how to use the building block from Python::
 
             from biobb_gromacs.gromacs_extra.ndx2resttop import ndx2resttop
-            prop = { 'ref_rest_chain_triplet_list': '( Chain_A, Chain_A_noMut, A ), ( Chain_B, Chain_B_noMut, B ), ( Chain_C, Chain_C_noMut, C ), ( Chain_D, Chain_D_noMut, D )' }
+            prop = { 'ref_rest_mol_triplet_list': '( Chain_A, Chain_A_noMut, Protein_chain_A ), ( Chain_B, Chain_B_noMut, Protein_chain_B ), ( Chain_C, Chain_C_noMut, Protein_chain_C ), ( Chain_D, Chain_D_noMut, Protein_chain_D )' }
             ndx2resttop(input_ndx_path='/path/to/myIndex.ndx',
                         input_top_zip_path='/path/to/myTopology.zip',
                         output_top_zip_path='/path/to/newTopology.zip',
@@ -63,7 +63,7 @@ class Ndx2resttop(BiobbObject):
         # Properties specific for BB
         self.posres_names = properties.get('posres_names')
         self.force_constants = properties.get('force_constants', '500 500 500')
-        self.ref_rest_chain_triplet_list = properties.get('ref_rest_chain_triplet_list')
+        self.ref_rest_mol_triplet_list = properties.get('ref_rest_mol_triplet_list')
 
         # Check the properties
         self.check_properties(properties)
@@ -113,27 +113,27 @@ class Ndx2resttop(BiobbObject):
 
         fu.log('groups_dic: '+str(groups_dic), self.out_log, self.global_log)
 
-        self.ref_rest_chain_triplet_list = [tuple(elem.strip(' ()').replace(' ', '').split(',')) for elem in str(self.ref_rest_chain_triplet_list).split('),')]
-        fu.log('ref_rest_chain_triplet_list: ' + str(self.ref_rest_chain_triplet_list), self.out_log, self.global_log)
+        self.ref_rest_mol_triplet_list = [tuple(elem.strip(' ()').replace(' ', '').split(',')) for elem in str(self.ref_rest_mol_triplet_list).split('),')]
+        fu.log('ref_rest_mol_triplet_list: ' + str(self.ref_rest_mol_triplet_list), self.out_log, self.global_log)
 
         if self.posres_names:
             self.posres_names = [elem.strip() for elem in self.posres_names.split()]
             fu.log('posres_names: ' + str(self.posres_names), self.out_log, self.global_log)
         else:
-            self.posres_names = ['CUSTOM_POSRES']*len(self.ref_rest_chain_triplet_list)
+            self.posres_names = ['CUSTOM_POSRES']*len(self.ref_rest_mol_triplet_list)
             fu.log('posres_names: ' + str(self.posres_names), self.out_log, self.global_log)
 
-        # Check if the number of posres_names matches the number of ref_rest_chain_triplet_list
-        if len(self.posres_names) != len(self.ref_rest_chain_triplet_list):
-            raise ValueError("If posres_names is provided, it should match the number of ref_rest_chain_triplet_list")
+        # Check if the number of posres_names matches the number of ref_rest_mol_triplet_list
+        if len(self.posres_names) != len(self.ref_rest_mol_triplet_list):
+            raise ValueError("If posres_names is provided, it should match the number of ref_rest_mol_triplet_list")
 
-        for triplet, posre_name in zip(self.ref_rest_chain_triplet_list, self.posres_names):
+        for triplet, posre_name in zip(self.ref_rest_mol_triplet_list, self.posres_names):
 
-            reference_group, restrain_group, chain = triplet
+            reference_group, restrain_group, molecule_name = triplet
 
             fu.log('Reference group: '+reference_group, self.out_log, self.global_log)
             fu.log('Restrain group: '+restrain_group, self.out_log, self.global_log)
-            fu.log('Chain: '+chain, self.out_log, self.global_log)
+            fu.log('Molecule name: '+molecule_name, self.out_log, self.global_log)
             self.io_dict['out']["output_itp_path"] = fu.create_name(path=str(Path(top_file).parent), prefix=self.prefix, step=self.step, name=restrain_group+'_posre.itp')
 
             # Mapping atoms from absolute enumeration to Chain relative enumeration
@@ -155,7 +155,7 @@ class Ndx2resttop(BiobbObject):
             # Including new ITP in the corresponding ITP-chain file
             for file_dir in Path(top_file).parent.iterdir():
                 if "posre" not in file_dir.name and not file_dir.name.endswith("_pr.itp"):
-                    if fnmatch.fnmatch(str(file_dir), "*_chain_"+chain+".itp"):
+                    if fnmatch.fnmatch(str(file_dir), "*"+molecule_name+"*.itp"):
                         multi_chain = True
                         with open(str(file_dir), 'a') as f:
                             fu.log('Opening: '+str(f)+' and adding the ifdef include statement', self.out_log, self.global_log)
@@ -174,25 +174,39 @@ class Ndx2resttop(BiobbObject):
                 with open(top_file, 'r') as f:
                     lines = f.readlines()
 
-                main_chain = False
-                index = 0
+                in_moleculetype = False
+                found_molecule = False
+                index = None
 
-                # Find the index of the line where the custom position restraints are going to be included
-                for line in lines:
+                # Find the line where the custom position restraints are going to be included
+                for i, line in enumerate(lines):
+                    stripped = line.strip()
 
-                    # Find the moleculetype directive of the main chain
-                    if line.startswith('Protein_chain_'+chain):
-                        main_chain = True
-                        index = lines.index(line) + 3
-
-                    # Find the end of the moleculetype directive of the main chain
-                    if main_chain:
-                        if line.startswith('[system]') or line.startswith('[molecules]') or line.startswith('#include ') or line.startswith('#ifdef POSRES'):
-                            index = lines.index(line) - 1
+                    # Find insertion point: just before the next section or existing restraint block
+                    if found_molecule:
+                        is_next_section = stripped.startswith('[') and (
+                            'system' in stripped or 'molecules' in stripped or 'moleculetype' in stripped)
+                        if is_next_section or line.startswith('#include ') or line.startswith('#ifdef POSRES'):
+                            index = i
                             break
 
-                if index == 0:
-                    raise ValueError(f"Protein_chain_{chain} not found in the topology file")
+                    # Detect [ moleculetype ] directive
+                    if stripped.startswith('[') and 'moleculetype' in stripped:
+                        in_moleculetype = True
+                        continue
+
+                    # Find the molecule name line inside the [ moleculetype ] block
+                    if in_moleculetype:
+                        if stripped and not stripped.startswith(';'):
+                            in_moleculetype = False
+                            if not stripped.startswith('[') and stripped.split()[0] == molecule_name:
+                                found_molecule = True
+
+                if not found_molecule:
+                    raise ValueError(f"Molecule type '{molecule_name}' not found in the topology file")
+
+                if index is None:
+                    index = len(lines)
 
                 # Include the custom position restraints in the top file
                 lines.insert(index, '\n')
@@ -200,6 +214,7 @@ class Ndx2resttop(BiobbObject):
                 lines.insert(index + 2, '#ifdef '+str(posre_name)+'\n')
                 lines.insert(index + 3, '#include "'+str(Path(self.io_dict['out'].get("output_itp_path", "")).name)+'"\n')
                 lines.insert(index + 4, '#endif\n')
+                lines.insert(index + 5, '\n')
 
                 # Write the new top file
                 with open(top_file, 'w') as f:
