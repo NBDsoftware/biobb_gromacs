@@ -69,163 +69,240 @@ class Ndx2resttop(BiobbObject):
         self.check_properties(properties)
         self.check_arguments()
 
+    # --- Private helpers ---
+
+    def _parse_ndx_groups(self, ndx_lines: list) -> dict:
+        """Parse a GROMACS NDX file into a lookup table of group line ranges.
+
+        NDX format: each named group starts with a ``[ group_name ]`` header line,
+        followed by one or more rows of whitespace-separated global atom indices.
+
+        Returns a dict mapping the raw header string (e.g. ``'[ System ]'``) to a
+        two-element list ``[start_line, end_line]`` where the range is **half-open**
+        (matching Python slice semantics): ``ndx_lines[start_line:end_line]`` yields
+        the data rows for that group (the header line itself at ``start_line - 1`` is
+        excluded).
+
+        Edge cases handled:
+
+        - **Last group**: the final group has no successor header to trigger the end
+          assignment, so it is closed explicitly with ``index + 1`` (not ``index``)
+          to include the very last data line.
+        - **Single-content-line groups**: when a header is immediately followed by
+          another header (no trailing blank line), the default range would be
+          ``[H, H+1]`` giving an empty slice. The post-loop fix increments end by 1
+          to capture that single data line.
+        """
+        groups_dic: dict[str, Any] = {}
+        current_group = ''
+        previous_group = ''
+
+        for index, line in enumerate(ndx_lines):
+            if line.startswith('['):
+                current_group = line
+                groups_dic[current_group] = [index, 0]
+                if previous_group:
+                    groups_dic[previous_group][1] = index
+                previous_group = current_group
+
+            if index == len(ndx_lines) - 1:
+                groups_dic[current_group][1] = index + 1
+
+        # Fix single-content-line groups
+        for group_name in groups_dic:
+            if groups_dic[group_name][0] + 1 == groups_dic[group_name][1]:
+                groups_dic[group_name][1] += 1
+
+        return groups_dic
+
+    def _read_ndx_atoms(self, ndx_lines: list, groups_dic: dict, group_name: str) -> list:
+        """Return the flat list of global atom indices for a named NDX group.
+
+        Slices the group's data rows from ndx_lines using the half-open range
+        stored in groups_dic, then flattens all whitespace-separated tokens into
+        a single list of integers.
+
+        Returned integers are **global** (system-wide) GROMACS atom numbers, 1-based.
+        """
+        key = f'[ {group_name} ]'
+        start = groups_dic[key][0] + 1
+        stop  = groups_dic[key][1]
+        fu.log(f'{group_name}: start_closed={start} stop_open={stop}', self.out_log, self.global_log)
+        atoms = [int(atom) for line in ndx_lines[start:stop] for atom in line.split()]
+        return atoms
+
+    def _write_posre_itp(self, itp_path: str, selected_atoms: list) -> None:
+        """Write a GROMACS position restraint ITP file.
+
+        ``selected_atoms`` must contain **molecule-local** 1-based atom indices
+        (not global system-wide indices). The atom type column is hardcoded to
+        ``1`` (GROMACS position restraint type). ``self.force_constants`` is a
+        verbatim string ``"Fx Fy Fz"`` applied uniformly to every restrained atom.
+        """
+        with open(itp_path, 'w') as f:
+            fu.log(f'Creating {itp_path} with selected atoms and force constants', self.out_log, self.global_log)
+            f.write('[ position_restraints ]\n')
+            f.write('; atom  type      fx      fy      fz\n')
+            for atom in selected_atoms:
+                f.write(f'{atom}     1  {self.force_constants}\n')
+
+    def _insert_posres_in_top(self, top_file: str, molecule_name: str, posre_name: str, itp_name: str) -> None:
+        """Splice the #ifdef posres block into the .top file for single-chain topologies.
+
+        Uses a two-phase scan over the topology lines:
+
+        Phase 1 – locate the target moleculetype:
+          For each ``[ moleculetype ]`` directive, read the first non-comment
+          content line and compare its first token against ``molecule_name``.
+          Set ``found_molecule = True`` when matched.
+
+        Phase 2 – find the insertion point (only after found_molecule):
+          Scan forward for the earliest of:
+          - another top-level section (``[ moleculetype ]``, ``[ system ]``,
+            ``[ molecules ]``)
+          - an existing ``#include`` or ``#ifdef POSRES`` line
+          Insert immediately before that line. Fall back to EOF if none found.
+
+        Important: the insertion-point check (Phase 2) runs *before* the
+        ``[ moleculetype ]`` detector within the same loop iteration. Without this
+        ordering, a new ``[ moleculetype ]`` that should trigger insertion would
+        instead be consumed by the ``continue`` in the detector, causing the block
+        to be placed in the wrong molecule section.
+        """
+        with open(top_file, 'r') as f:
+            lines = f.readlines()
+
+        in_moleculetype = False
+        found_molecule  = False
+        index = None
+
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+
+            # Find insertion point: just before the next top-level section or existing restraint block
+            if found_molecule:
+                is_next_section = stripped.startswith('[') and (
+                    'system' in stripped or 'molecules' in stripped or 'moleculetype' in stripped)
+                if is_next_section or line.startswith('#include ') or line.startswith('#ifdef POSRES'):
+                    index = i
+                    break
+
+            # Detect [ moleculetype ] directive
+            if stripped.startswith('[') and 'moleculetype' in stripped:
+                in_moleculetype = True
+                continue
+
+            # Find the molecule name line inside the [ moleculetype ] block
+            if in_moleculetype:
+                if stripped and not stripped.startswith(';'):
+                    in_moleculetype = False
+                    if not stripped.startswith('[') and stripped.split()[0] == molecule_name:
+                        found_molecule = True
+
+        if not found_molecule:
+            raise ValueError(f"Molecule type '{molecule_name}' not found in the topology file")
+
+        if index is None:
+            index = len(lines)
+
+        lines.insert(index,     '\n')
+        lines.insert(index + 1, '; Include Position restraint file\n')
+        lines.insert(index + 2, f'#ifdef {posre_name}\n')
+        lines.insert(index + 3, f'#include "{itp_name}"\n')
+        lines.insert(index + 4, '#endif\n')
+        lines.insert(index + 5, '\n')
+
+        with open(top_file, 'w') as f:
+            f.writelines(lines)
+
+    # --- Main entry point ---
+
     @launchlogger
     def launch(self) -> int:
         """Execute the :class:`Ndx2resttop <gromacs_extra.ndx2resttop.Ndx2resttop>` object."""
-        # Setup Biobb
         if self.check_restart():
             return 0
 
         top_file = fu.unzip_top(zip_file=self.io_dict['in'].get("input_top_zip_path", ""), out_log=self.out_log)
 
-        # Create group dictionary from the ndx index file
-        # Each group will have a list with its starting and ending lines in the ndx file
-        groups_dic: dict[str, Any] = {}
-        current_group = ''
-        previous_group = ''
-        
-        # Iterate over the lines of the ndx file
         ndx_lines = open(self.io_dict['in'].get("input_ndx_path", "")).read().splitlines()
-        for index, line in enumerate(ndx_lines):
-            
-            # Found a new group in the index file
-            if line.startswith('['):
-                current_group = line
-                
-                # Set the starting line of the new group
-                groups_dic[current_group] = [index, 0]
+        groups_dic = self._parse_ndx_groups(ndx_lines)
+        fu.log(f'Parsed NDX groups: {list(groups_dic.keys())}', self.out_log, self.global_log)
 
-                # Check if there was a previous group to set its ending line
-                if previous_group != '':
-                    groups_dic[previous_group][1] = index
-                    
-                # Update the previous group variable
-                previous_group = current_group
-
-            # If we reach the last line of the file, set the ending line of the last group
-            if index == len(ndx_lines)-1:
-                groups_dic[current_group][1] = index + 1
-
-        # Catch groups with just one line
-        for group_name in groups_dic.keys():
-            if (groups_dic[group_name][0]+1) == groups_dic[group_name][1]:
-                groups_dic[group_name][1] += 1
-
-        fu.log('groups_dic: '+str(groups_dic), self.out_log, self.global_log)
-
-        self.ref_rest_mol_triplet_list = [tuple(elem.strip(' ()').replace(' ', '').split(',')) for elem in str(self.ref_rest_mol_triplet_list).split('),')]
+        # Parse triplet string: "(ref, restrain, mol), ..." -> list of 3-tuples
+        raw_triplets = str(self.ref_rest_mol_triplet_list).split('),')
+        self.ref_rest_mol_triplet_list = [
+            tuple(elem.strip(' ()').replace(' ', '').split(','))
+            for elem in raw_triplets
+        ]
         fu.log('ref_rest_mol_triplet_list: ' + str(self.ref_rest_mol_triplet_list), self.out_log, self.global_log)
 
         if self.posres_names:
             self.posres_names = [elem.strip() for elem in self.posres_names.split()]
-            fu.log('posres_names: ' + str(self.posres_names), self.out_log, self.global_log)
         else:
-            self.posres_names = ['CUSTOM_POSRES']*len(self.ref_rest_mol_triplet_list)
-            fu.log('posres_names: ' + str(self.posres_names), self.out_log, self.global_log)
+            self.posres_names = ['CUSTOM_POSRES'] * len(self.ref_rest_mol_triplet_list)
+        fu.log('posres_names: ' + str(self.posres_names), self.out_log, self.global_log)
 
-        # Check if the number of posres_names matches the number of ref_rest_mol_triplet_list
         if len(self.posres_names) != len(self.ref_rest_mol_triplet_list):
-            raise ValueError("If posres_names is provided, it should match the number of ref_rest_mol_triplet_list")
+            raise ValueError("posres_names length must match ref_rest_mol_triplet_list length")
 
         for triplet, posre_name in zip(self.ref_rest_mol_triplet_list, self.posres_names):
+            # Per-triplet workflow:
+            #   1. Unpack (reference_group, restrain_group, molecule_name)
+            #   2. Read global NDX indices for both groups
+            #   3. Remap restrain atoms to molecule-local 1-based indices
+            #   4. Write the _posre.itp
+            #   5. Inject #ifdef guard — multi-chain (per-chain .itp) or single-chain (.top)
 
             reference_group, restrain_group, molecule_name = triplet
+            fu.log(f'Reference group: {reference_group}', self.out_log, self.global_log)
+            fu.log(f'Restrain group: {restrain_group}', self.out_log, self.global_log)
+            fu.log(f'Molecule name: {molecule_name}', self.out_log, self.global_log)
 
-            fu.log('Reference group: '+reference_group, self.out_log, self.global_log)
-            fu.log('Restrain group: '+restrain_group, self.out_log, self.global_log)
-            fu.log('Molecule name: '+molecule_name, self.out_log, self.global_log)
-            self.io_dict['out']["output_itp_path"] = fu.create_name(path=str(Path(top_file).parent), prefix=self.prefix, step=self.step, name=restrain_group+'_posre.itp')
+            itp_path = fu.create_name(path=str(Path(top_file).parent), prefix=self.prefix,
+                                      step=self.step, name=restrain_group + '_posre.itp')
+            self.io_dict['out']["output_itp_path"] = itp_path
 
-            # Mapping atoms from absolute enumeration to Chain relative enumeration
-            fu.log('reference_group_index: start_closed:'+str(groups_dic['[ '+reference_group+' ]'][0]+1)+' stop_open: '+str(groups_dic['[ '+reference_group+' ]'][1]), self.out_log, self.global_log)
-            reference_group_list = [int(elem) for line in ndx_lines[groups_dic['[ '+reference_group+' ]'][0]+1: groups_dic['[ '+reference_group+' ]'][1]] for elem in line.split()]
-            fu.log('restrain_group_index: start_closed:'+str(groups_dic['[ '+restrain_group+' ]'][0]+1)+' stop_open: '+str(groups_dic['[ '+restrain_group+' ]'][1]), self.out_log, self.global_log)
-            restrain_group_list = [int(elem) for line in ndx_lines[groups_dic['[ '+restrain_group+' ]'][0]+1: groups_dic['[ '+restrain_group+' ]'][1]] for elem in line.split()]
-            selected_list = [reference_group_list.index(atom)+1 for atom in restrain_group_list]
-            # Creating new ITP with restrains
-            with open(self.io_dict['out'].get("output_itp_path", ''), 'w') as f:
-                fu.log('Creating: '+str(f)+' and adding the selected atoms force constants', self.out_log, self.global_log)
-                f.write('[ position_restraints ]\n')
-                f.write('; atom  type      fx      fy      fz\n')
-                for atom in selected_list:
-                    f.write(str(atom)+'     1  '+self.force_constants+'\n')
+            # Map global NDX indices -> molecule-local 1-based indices.
+            # reference_atoms.index(atom) gives the 0-based position of each global
+            # restrain atom within the reference group list. Adding 1 converts to
+            # GROMACS 1-based local numbering, which matches the atom order in the
+            # [ atoms ] section of each moleculetype block.
+            reference_atoms = self._read_ndx_atoms(ndx_lines, groups_dic, reference_group)
+            restrain_atoms  = self._read_ndx_atoms(ndx_lines, groups_dic, restrain_group)
+            selected_atoms  = [reference_atoms.index(atom) + 1 for atom in restrain_atoms]
 
+            self._write_posre_itp(itp_path, selected_atoms)
+            itp_name = Path(itp_path).name
+
+            # Multi-chain: append ifdef block to the matching per-chain ITP.
+            # Detection heuristic: if any .itp file in the topology directory has
+            # molecule_name in its filename (and is not already a posre/pr file),
+            # this is a multi-chain topology where each chain has its own .itp
+            # included by the .top. In that case, append directly to that file.
+            # Otherwise fall through to single-chain mode (_insert_posres_in_top).
             multi_chain = False
-            # For multi-chain topologies
-            # Including new ITP in the corresponding ITP-chain file
             for file_dir in Path(top_file).parent.iterdir():
                 if "posre" not in file_dir.name and not file_dir.name.endswith("_pr.itp"):
-                    if fnmatch.fnmatch(str(file_dir), "*"+molecule_name+"*.itp"):
+                    match = fnmatch.fnmatch(str(file_dir), "*" + molecule_name + "*.itp")
+                    if match:
                         multi_chain = True
                         with open(str(file_dir), 'a') as f:
-                            fu.log('Opening: '+str(f)+' and adding the ifdef include statement', self.out_log, self.global_log)
+                            fu.log(f'Opening {file_dir} and adding ifdef include', self.out_log, self.global_log)
                             f.write('\n')
                             f.write('; Include Position restraint file\n')
-                            f.write('#ifdef '+str(posre_name)+'\n')
-                            f.write('#include "'+str(Path(self.io_dict['out'].get("output_itp_path", "")).name)+'"\n')
+                            f.write(f'#ifdef {posre_name}\n')
+                            f.write(f'#include "{itp_name}"\n')
                             f.write('#endif\n')
                             f.write('\n')
 
-            # For single-chain topologies
-            # Including new ITP in the TOP file
+            # Single-chain: splice ifdef block into the .top file
             if not multi_chain:
+                self._insert_posres_in_top(top_file, molecule_name, posre_name, itp_name)
 
-                # Read all lines of the top file
-                with open(top_file, 'r') as f:
-                    lines = f.readlines()
-
-                in_moleculetype = False
-                found_molecule = False
-                index = None
-
-                # Find the line where the custom position restraints are going to be included
-                for i, line in enumerate(lines):
-                    stripped = line.strip()
-
-                    # Find insertion point: just before the next section or existing restraint block
-                    if found_molecule:
-                        is_next_section = stripped.startswith('[') and (
-                            'system' in stripped or 'molecules' in stripped or 'moleculetype' in stripped)
-                        if is_next_section or line.startswith('#include ') or line.startswith('#ifdef POSRES'):
-                            index = i
-                            break
-
-                    # Detect [ moleculetype ] directive
-                    if stripped.startswith('[') and 'moleculetype' in stripped:
-                        in_moleculetype = True
-                        continue
-
-                    # Find the molecule name line inside the [ moleculetype ] block
-                    if in_moleculetype:
-                        if stripped and not stripped.startswith(';'):
-                            in_moleculetype = False
-                            if not stripped.startswith('[') and stripped.split()[0] == molecule_name:
-                                found_molecule = True
-
-                if not found_molecule:
-                    raise ValueError(f"Molecule type '{molecule_name}' not found in the topology file")
-
-                if index is None:
-                    index = len(lines)
-
-                # Include the custom position restraints in the top file
-                lines.insert(index, '\n')
-                lines.insert(index + 1, '; Include Position restraint file\n')
-                lines.insert(index + 2, '#ifdef '+str(posre_name)+'\n')
-                lines.insert(index + 3, '#include "'+str(Path(self.io_dict['out'].get("output_itp_path", "")).name)+'"\n')
-                lines.insert(index + 4, '#endif\n')
-                lines.insert(index + 5, '\n')
-
-                # Write the new top file
-                with open(top_file, 'w') as f:
-                    f.writelines(lines)
-
-        # zip topology
-        fu.zip_top(zip_file=self.io_dict['out'].get("output_top_zip_path", ""), top_file=top_file, out_log=self.out_log, remove_original_files=self.remove_tmp)
-
-        # Remove temporal files
+        fu.zip_top(zip_file=self.io_dict['out'].get("output_top_zip_path", ""),
+                   top_file=top_file, out_log=self.out_log, remove_original_files=self.remove_tmp)
         self.remove_tmp_files()
-
         self.check_arguments(output_files_created=True, raise_exception=False)
         return 0
 
