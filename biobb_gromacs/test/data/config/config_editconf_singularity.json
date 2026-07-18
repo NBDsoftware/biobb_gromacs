@@ -1,7 +1,10 @@
 {
   "properties": {
+    "distance_to_molecule": 1.0,
+    "box_type": "cubic",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/tmp"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }

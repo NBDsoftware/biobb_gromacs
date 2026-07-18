@@ -207,7 +207,7 @@
                     "type": "boolean",
                     "default": false,
                     "wf_prop": false,
-                    "description": "Should pdb2gmx ignore the hidrogens in the original structure."
+                    "description": "Should pdb2gmx ignore the hydrogens in the original structure."
                 },
                 "lys": {
                     "type": "array",

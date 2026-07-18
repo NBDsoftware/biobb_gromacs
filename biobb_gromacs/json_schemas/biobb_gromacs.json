@@ -63,7 +63,7 @@
             "desc": "Performs molecular dynamics simulations from an input GROMACS TPR file.",
             "exec": "mdrun_plumed",
             "docs": "https://biobb-gromacs.readthedocs.io/en/latest/gromacs.html#module-gromacs.mdrun_plumed",
-            "rest": true
+            "rest": false
         },
         {
             "block": "GromppMdrun",
