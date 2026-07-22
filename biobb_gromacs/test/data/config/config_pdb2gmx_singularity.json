@@ -2,7 +2,8 @@
   "properties": {
     "his": "0 0 1 1 0 0 0",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/inout"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }

@@ -2,11 +2,9 @@
 
 """Module containing the Editconf class and the command line interface."""
 import shutil
-import argparse
 from typing import Optional
-from pathlib import Path
+from pathlib import Path, PurePath
 from biobb_common.generic.biobb_object import BiobbObject
-from biobb_common.configuration import settings
 from biobb_common.tools import file_utils as fu
 from biobb_common.tools.file_utils import launchlogger
 from biobb_gromacs.gromacs.common import get_gromacs_version
@@ -108,17 +106,23 @@ class Solvate(BiobbObject):
         self.stage_files()
 
         # Unzip topology to topology_out
-        top_file = fu.unzip_top(zip_file=self.input_top_zip_path, out_log=self.out_log)
+        top_file = fu.unzip_top(zip_file=self.input_top_zip_path, out_log=self.out_log, unique_dir=self.stage_io_dict.get("unique_dir", ""))
         top_dir = str(Path(top_file).parent)
 
         if self.container_path:
             shutil.copytree(top_dir, str(Path(self.stage_io_dict.get("unique_dir", "")).joinpath(Path(top_dir).name)))
-            top_file = str(Path(self.container_volume_path).joinpath(Path(top_dir).name, Path(top_file).name))
+            top_file = str(Path(Path(top_dir).name).joinpath(Path(top_file).name))
 
-        self.cmd = [self.binary_path, 'solvate',
-                    '-cp', self.stage_io_dict["in"]["input_solute_gro_path"],
-                    '-cs', self.stage_io_dict["in"]["input_solvent_gro_path"],
-                    '-o', self.stage_io_dict["out"]["output_gro_path"],
+        if self.container_path:
+            working_dir = self.container_volume_path if self.container_volume_path else "/data"
+        else:
+            working_dir = self.stage_io_dict.get('unique_dir', '')
+
+        self.cmd = ["cd", working_dir, ";",
+                    self.binary_path, 'solvate',
+                    '-cp', PurePath(self.stage_io_dict["in"]["input_solute_gro_path"]).name,
+                    '-cs', PurePath(self.stage_io_dict["in"]["input_solvent_gro_path"]).name,
+                    '-o', PurePath(self.stage_io_dict["out"]["output_gro_path"]).name,
                     '-p', top_file]
 
         if self.shell:
@@ -135,7 +139,8 @@ class Solvate(BiobbObject):
         self.copy_to_host()
 
         if self.container_path:
-            top_file = str(Path(self.stage_io_dict.get("unique_dir", "")).joinpath(Path(top_dir).name, Path(top_file).name))
+            top_file = str(Path(str(self.stage_io_dict.get("unique_dir", ""))).joinpath(
+                Path(top_dir).name, Path(top_file).name))
 
         # zip topology
         fu.log('Compressing topology to: %s' % self.stage_io_dict["out"]["output_top_zip_path"], self.out_log,
@@ -153,37 +158,11 @@ def solvate(input_solute_gro_path: str, output_gro_path: str, input_top_zip_path
             output_top_zip_path: str, input_solvent_gro_path: Optional[str] = None, properties: Optional[dict] = None, **kwargs) -> int:
     """Create :class:`Solvate <gromacs.solvate.Solvate>` class and
     execute the :meth:`launch() <gromacs.solvate.Solvate.launch>` method."""
-
-    return Solvate(input_solute_gro_path=input_solute_gro_path, output_gro_path=output_gro_path,
-                   input_top_zip_path=input_top_zip_path, output_top_zip_path=output_top_zip_path,
-                   input_solvent_gro_path=input_solvent_gro_path, properties=properties, **kwargs).launch()
+    return Solvate(**dict(locals())).launch()
 
 
 solvate.__doc__ = Solvate.__doc__
-
-
-def main():
-    """Command line execution of this building block. Please check the command line documentation."""
-    parser = argparse.ArgumentParser(description="Wrapper for the GROMACS solvate module.",
-                                     formatter_class=lambda prog: argparse.RawTextHelpFormatter(prog, width=99999))
-    parser.add_argument('-c', '--config', required=False, help="This file can be a YAML file, JSON file or JSON string")
-
-    # Specific args of each building block
-    required_args = parser.add_argument_group('required arguments')
-    required_args.add_argument('--input_solute_gro_path', required=True)
-    required_args.add_argument('--output_gro_path', required=True)
-    required_args.add_argument('--input_top_zip_path', required=True)
-    required_args.add_argument('--output_top_zip_path', required=True)
-    parser.add_argument('--input_solvent_gro_path', required=False)
-
-    args = parser.parse_args()
-    config = args.config if args.config else None
-    properties = settings.ConfReader(config=config).get_prop_dic()
-
-    # Specific call of each building block
-    solvate(input_solute_gro_path=args.input_solute_gro_path, output_gro_path=args.output_gro_path,
-            input_top_zip_path=args.input_top_zip_path, output_top_zip_path=args.output_top_zip_path,
-            input_solvent_gro_path=args.input_solvent_gro_path, properties=properties)
+main = Solvate.get_main(solvate, "Wrapper for the GROMACS solvate module.")
 
 
 if __name__ == '__main__':

@@ -2,11 +2,9 @@
 
 """Module containing the Genrestr class and the command line interface."""
 
-import argparse
-from pathlib import Path
+from pathlib import Path, PurePath
 from typing import Optional, Union
 
-from biobb_common.configuration import settings
 from biobb_common.generic.biobb_object import BiobbObject
 from biobb_common.tools import file_utils as fu
 from biobb_common.tools.file_utils import launchlogger
@@ -113,13 +111,19 @@ class Genrestr(BiobbObject):
         self.io_dict["in"]["stdin_file_path"] = fu.create_stdin_file(f"{self.restrained_group}")
         self.stage_files()
 
+        if self.container_path:
+            working_dir = self.container_volume_path if self.container_volume_path else "/data"
+        else:
+            working_dir = self.stage_io_dict.get('unique_dir', '')
+
         self.cmd = [
+            "cd", working_dir, ";",
             str(self.binary_path),
             "genrestr",
             "-f",
-            self.stage_io_dict["in"]["input_structure_path"],
+            PurePath(self.stage_io_dict["in"]["input_structure_path"]).name,
             "-o",
-            self.stage_io_dict["out"]["output_itp_path"],
+            PurePath(self.stage_io_dict["out"]["output_itp_path"]).name,
         ]
 
         if not isinstance(self.force_constants, str):
@@ -130,11 +134,11 @@ class Genrestr(BiobbObject):
 
         if self.stage_io_dict["in"].get("input_ndx_path"):
             self.cmd.append("-n")
-            self.cmd.append(self.stage_io_dict["in"]["input_ndx_path"])
+            self.cmd.append(PurePath(self.stage_io_dict["in"]["input_ndx_path"]).name)
 
         # Add stdin input file
         self.cmd.append("<")
-        self.cmd.append(self.stage_io_dict["in"]["stdin_file_path"])
+        self.cmd.append(PurePath(self.stage_io_dict["in"]["stdin_file_path"]).name)
 
         if self.gmx_lib:
             self.env_vars_dict["GMXLIB"] = self.gmx_lib
@@ -146,11 +150,7 @@ class Genrestr(BiobbObject):
         self.copy_to_host()
 
         # Remove temporal files
-        self.tmp_files.extend(
-            [
-                str(self.io_dict["in"].get("stdin_file_path")),
-            ]
-        )
+        self.tmp_files.append(str(self.io_dict["in"].get("stdin_file_path")))
         self.remove_tmp_files()
 
         self.check_arguments(output_files_created=True, raise_exception=False)
@@ -166,49 +166,11 @@ def genrestr(
 ) -> int:
     """Create :class:`Genrestr <gromacs.genrestr.Genrestr>` class and
     execute the :meth:`launch() <gromacs.genrestr.Genrestr.launch>` method."""
-
-    return Genrestr(
-        input_structure_path=input_structure_path,
-        output_itp_path=output_itp_path,
-        input_ndx_path=input_ndx_path,
-        properties=properties,
-        **kwargs,
-    ).launch()
+    return Genrestr(**dict(locals())).launch()
 
 
 genrestr.__doc__ = Genrestr.__doc__
-
-
-def main():
-    """Command line execution of this building block. Please check the command line documentation."""
-    parser = argparse.ArgumentParser(
-        description="Wrapper for the GROMACS genion module.",
-        formatter_class=lambda prog: argparse.RawTextHelpFormatter(prog, width=99999),
-    )
-    parser.add_argument(
-        "-c",
-        "--config",
-        required=False,
-        help="This file can be a YAML file, JSON file or JSON string",
-    )
-
-    # Specific args of each building block
-    required_args = parser.add_argument_group("required arguments")
-    required_args.add_argument("--input_structure_path", required=True)
-    required_args.add_argument("--output_itp_path", required=True)
-    parser.add_argument("--input_ndx_path", required=False)
-
-    args = parser.parse_args()
-    config = args.config if args.config else None
-    properties = settings.ConfReader(config=config).get_prop_dic()
-
-    # Specific call of each building block
-    genrestr(
-        input_structure_path=args.input_structure_path,
-        input_ndx_path=args.input_ndx_path,
-        output_itp_path=args.output_itp_path,
-        properties=properties,
-    )
+main = Genrestr.get_main(genrestr, "Wrapper for the GROMACS genrestr module.")
 
 
 if __name__ == "__main__":

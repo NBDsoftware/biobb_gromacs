@@ -1,8 +1,10 @@
 {
   "properties": {
+    "restrained_group": "system",
+    "force_constants": "500 500 500",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/data",
-    "container_working_dir": "/data"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }

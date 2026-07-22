@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
 """Module containing the MakeNdx class and the command line interface."""
-import argparse
 from typing import Optional
-from pathlib import Path
+from pathlib import Path, PurePath
 from biobb_common.generic.biobb_object import BiobbObject
-from biobb_common.configuration import settings
 from biobb_common.tools import file_utils as fu
 from biobb_common.tools.file_utils import launchlogger
 from biobb_gromacs.gromacs.common import get_gromacs_version
@@ -95,23 +93,30 @@ class MakeNdx(BiobbObject):
         if self.check_restart():
             return 0
 
+        self.selection = str(self.selection)
         self.selection = self.selection.replace("\\n", "\n")
         self.io_dict['in']['stdin_file_path'] = fu.create_stdin_file(f'{self.selection}\nq\n')
         self.stage_files()
 
+        if self.container_path:
+            working_dir = self.container_volume_path if self.container_volume_path else "/data"
+        else:
+            working_dir = self.stage_io_dict.get('unique_dir', '')
+
         # Create command line
-        self.cmd = [self.binary_path, 'make_ndx',
-                    '-f', self.stage_io_dict["in"]["input_structure_path"],
-                    '-o', self.stage_io_dict["out"]["output_ndx_path"]]
+        self.cmd = ["cd", working_dir, ";",
+                    self.binary_path, 'make_ndx',
+                    '-f', PurePath(self.stage_io_dict["in"]["input_structure_path"]).name,
+                    '-o', PurePath(self.stage_io_dict["out"]["output_ndx_path"]).name]
 
         if self.stage_io_dict["in"].get("input_ndx_path")\
                 and Path(self.stage_io_dict["in"].get("input_ndx_path")).exists():
             self.cmd.append('-n')
-            self.cmd.append(self.stage_io_dict["in"].get("input_ndx_path"))
+            self.cmd.append(PurePath(self.stage_io_dict["in"].get("input_ndx_path")).name)
 
         # Add stdin input file
         self.cmd.append('<')
-        self.cmd.append(self.stage_io_dict["in"]["stdin_file_path"])
+        self.cmd.append(PurePath(self.stage_io_dict["in"]["stdin_file_path"]).name)
 
         if self.gmx_lib:
             self.env_vars_dict['GMXLIB'] = self.gmx_lib
@@ -123,9 +128,7 @@ class MakeNdx(BiobbObject):
         self.copy_to_host()
 
         # Remove temporal files
-        self.tmp_files.extend([
-            self.io_dict['in'].get("stdin_file_path", '')
-        ])
+        self.tmp_files.append(self.io_dict['in'].get("stdin_file_path", ''))
         self.remove_tmp_files()
 
         self.check_arguments(output_files_created=True, raise_exception=False)
@@ -136,36 +139,11 @@ def make_ndx(input_structure_path: str, output_ndx_path: str,
              input_ndx_path: Optional[str] = None, properties: Optional[dict] = None, **kwargs) -> int:
     """Create :class:`MakeNdx <gromacs.make_ndx.MakeNdx>` class and
     execute the :meth:`launch() <gromacs.make_ndx.MakeNdx.launch>` method."""
-    return MakeNdx(input_structure_path=input_structure_path,
-                   output_ndx_path=output_ndx_path,
-                   input_ndx_path=input_ndx_path,
-                   properties=properties, **kwargs).launch()
+    return MakeNdx(**dict(locals())).launch()
 
 
 make_ndx.__doc__ = MakeNdx.__doc__
-
-
-def main():
-    """Command line execution of this building block. Please check the command line documentation."""
-    parser = argparse.ArgumentParser(description="Wrapper for the GROMACS make_ndx module.",
-                                     formatter_class=lambda prog: argparse.RawTextHelpFormatter(prog, width=99999))
-    parser.add_argument('-c', '--config', required=False, help="This file can be a YAML file, JSON file or JSON string")
-
-    # Specific args of each building block
-    required_args = parser.add_argument_group('required arguments')
-    required_args.add_argument('--input_structure_path', required=True)
-    required_args.add_argument('--output_ndx_path', required=True)
-    parser.add_argument('--input_ndx_path', required=False)
-
-    args = parser.parse_args()
-    config = args.config if args.config else None
-    properties = settings.ConfReader(config=config).get_prop_dic()
-
-    # Specific call of each building block
-    make_ndx(input_structure_path=args.input_structure_path,
-             output_ndx_path=args.output_ndx_path,
-             input_ndx_path=args.input_ndx_path,
-             properties=properties)
+main = MakeNdx.get_main(make_ndx, "Wrapper for the GROMACS make_ndx module.")
 
 
 if __name__ == '__main__':

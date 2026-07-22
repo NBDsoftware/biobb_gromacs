@@ -13,20 +13,26 @@ Command:
 ```python
 append_ligand -h
 ```
-    usage: append_ligand [-h] [-c CONFIG] --input_top_zip_path INPUT_TOP_ZIP_PATH --input_itp_path INPUT_ITP_PATH --output_top_zip_path OUTPUT_TOP_ZIP_PATH [--input_posres_itp_path INPUT_POSRES_ITP_PATH]
+    usage: append_ligand [-h] [-c CONFIG] --input_top_zip_path INPUT_TOP_ZIP_PATH --input_itp_path INPUT_ITP_PATH -o OUTPUT_TOP_ZIP_PATH [--input_posres_itp_path INPUT_POSRES_ITP_PATH]
     
-    Wrapper of the GROMACS editconf module.
+    This command takes a ligand ITP file and inserts it in a topology
     
     options:
       -h, --help            show this help message and exit
       -c CONFIG, --config CONFIG
                             This file can be a YAML file, JSON file or JSON string
-      --input_posres_itp_path INPUT_POSRES_ITP_PATH
     
     required arguments:
       --input_top_zip_path INPUT_TOP_ZIP_PATH
+                            Path the input topology TOP and ITP files zipball. Accepted formats: zip.
       --input_itp_path INPUT_ITP_PATH
-      --output_top_zip_path OUTPUT_TOP_ZIP_PATH
+                            Path to the ligand ITP file to be inserted in the topology. Accepted formats: itp.
+      -o OUTPUT_TOP_ZIP_PATH, --output_top_zip_path OUTPUT_TOP_ZIP_PATH
+                            Path/Name the output topology TOP and ITP files zipball. Accepted formats: zip.
+    
+    optional arguments:
+      --input_posres_itp_path INPUT_POSRES_ITP_PATH
+                            Path to the position restriction ITP file. Accepted formats: itp.
 ### I / O Arguments
 Syntax: input_argument (datatype) : Definition
 
@@ -39,10 +45,10 @@ Config input / output arguments for this building block:
 Syntax: input_parameter (datatype) - (default_value) Definition
 
 Config parameters for this building block:
-* **posres_name** (*string*): (POSRES_LIGAND) String to be included in the ifdef clause..
-* **remove_tmp** (*boolean*): (True) Remove temporal files..
-* **restart** (*boolean*): (False) Do not execute if output files exist..
-* **sandbox_path** (*string*): (./) Parent path to the sandbox directory..
+* **posres_name** (*string*): (POSRES_LIGAND) String to be included in the ifdef clause.
+* **remove_tmp** (*boolean*): (True) Remove temporal files.
+* **restart** (*boolean*): (False) Do not execute if output files exist.
+* **sandbox_path** (*string*): (./) Parent path to the sandbox directory.
 ### YAML
 #### [Common config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_append_ligand.yml)
 ```python
@@ -75,7 +81,7 @@ Command:
 ```python
 editconf -h
 ```
-    usage: editconf [-h] [-c CONFIG] --input_gro_path INPUT_GRO_PATH --output_gro_path OUTPUT_GRO_PATH
+    usage: editconf [-h] [-c CONFIG] -i INPUT_GRO_PATH -o OUTPUT_GRO_PATH
     
     Wrapper of the GROMACS gmx editconf module.
     
@@ -85,8 +91,10 @@ editconf -h
                             This file can be a YAML file, JSON file or JSON string
     
     required arguments:
-      --input_gro_path INPUT_GRO_PATH
-      --output_gro_path OUTPUT_GRO_PATH
+      -i INPUT_GRO_PATH, --input_gro_path INPUT_GRO_PATH
+                            Path to the input GRO file. Accepted formats: gro, pdb.
+      -o OUTPUT_GRO_PATH, --output_gro_path OUTPUT_GRO_PATH
+                            Path to the output GRO file. Accepted formats: pdb, gro.
 ### I / O Arguments
 Syntax: input_argument (datatype) : Definition
 
@@ -97,21 +105,21 @@ Config input / output arguments for this building block:
 Syntax: input_parameter (datatype) - (default_value) Definition
 
 Config parameters for this building block:
-* **distance_to_molecule** (*number*): (1.0) Distance of the box from the outermost atom in nm. ie 1.0nm = 10 Angstroms..
-* **box_vector_lenghts** (*string*): (None) Array of floats defining the box vector lenghts ie "0.5 0.5 0.5". If this option is used the distance_to_molecule property will be ignored..
-* **box_type** (*string*): (cubic) Geometrical shape of the solvent box. .
-* **center_molecule** (*boolean*): (True) Center molecule in the box..
-* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable..
-* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary..
-* **remove_tmp** (*boolean*): (True) Remove temporal files..
-* **restart** (*boolean*): (False) Do not execute if output files exist..
-* **sandbox_path** (*string*): (./) Parent path to the sandbox directory..
-* **container_path** (*string*): (None) Path to the binary executable of your container..
-* **container_image** (*string*): (None) Container Image identifier..
-* **container_volume_path** (*string*): (/data) Path to an internal directory in the container..
-* **container_working_dir** (*string*): (None) Path to the internal CWD in the container..
-* **container_user_id** (*string*): (None) User number id to be mapped inside the container..
-* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell..
+* **distance_to_molecule** (*number*): (1.0) Distance of the box from the outermost atom in nm. ie 1.0nm = 10 Angstroms.
+* **box_vector_lenghts** (*string*): (None) Array of floats defining the box vector lenghts ie "0.5 0.5 0.5". If this option is used the distance_to_molecule property will be ignored.
+* **box_type** (*string*): (cubic) Geometrical shape of the solvent box. 
+* **center_molecule** (*boolean*): (True) Center molecule in the box.
+* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable.
+* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary.
+* **remove_tmp** (*boolean*): (True) Remove temporal files.
+* **restart** (*boolean*): (False) Do not execute if output files exist.
+* **sandbox_path** (*string*): (./) Parent path to the sandbox directory.
+* **container_path** (*string*): (None) Path to the binary executable of your container.
+* **container_image** (*string*): (None) Container Image identifier.
+* **container_volume_path** (*string*): (/data) Path to an internal directory in the container.
+* **container_working_dir** (*string*): (None) Path to the internal CWD in the container.
+* **container_user_id** (*string*): (None) User number id to be mapped inside the container.
+* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell.
 ### YAML
 #### [Common config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_editconf.yml)
 ```python
@@ -123,17 +131,23 @@ properties:
 #### [Docker config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_editconf_docker.yml)
 ```python
 properties:
-  container_image: gromacs/gromacs:2025.2
+  box_type: cubic
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
   container_volume_path: /tmp
+  container_working_dir: /tmp
+  distance_to_molecule: 1.0
 
 ```
 #### [Singularity config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_editconf_singularity.yml)
 ```python
 properties:
-  container_image: gromacs.simg
+  box_type: cubic
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
   container_volume_path: /tmp
+  container_working_dir: /tmp
+  distance_to_molecule: 1.0
 
 ```
 #### Command line
@@ -154,9 +168,12 @@ editconf --config config_editconf.yml --input_gro_path editconf.gro --output_gro
 ```python
 {
   "properties": {
+    "distance_to_molecule": 1.0,
+    "box_type": "cubic",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/tmp"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -164,9 +181,12 @@ editconf --config config_editconf.yml --input_gro_path editconf.gro --output_gro
 ```python
 {
   "properties": {
+    "distance_to_molecule": 1.0,
+    "box_type": "cubic",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/tmp"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -190,13 +210,20 @@ genion -h
       -h, --help            show this help message and exit
       -c CONFIG, --config CONFIG
                             This file can be a YAML file, JSON file or JSON string
-      --input_ndx_path INPUT_NDX_PATH
     
     required arguments:
       --input_tpr_path INPUT_TPR_PATH
+                            Path to the input portable run input TPR file. Accepted formats: tpr.
       --output_gro_path OUTPUT_GRO_PATH
+                            Path to the input structure GRO file. Accepted formats: gro.
       --input_top_zip_path INPUT_TOP_ZIP_PATH
+                            Path the input TOP topology in zip format. Accepted formats: zip.
       --output_top_zip_path OUTPUT_TOP_ZIP_PATH
+                            Path the output topology TOP and ITP files zipball. Accepted formats: zip.
+    
+    optional arguments:
+      --input_ndx_path INPUT_NDX_PATH
+                            Path to the input index NDX file. Accepted formats: ndx.
 ### I / O Arguments
 Syntax: input_argument (datatype) : Definition
 
@@ -210,21 +237,21 @@ Config input / output arguments for this building block:
 Syntax: input_parameter (datatype) - (default_value) Definition
 
 Config parameters for this building block:
-* **replaced_group** (*string*): (SOL) Group of molecules that will be replaced by the solvent..
-* **neutral** (*boolean*): (False) Neutralize the charge of the system..
-* **concentration** (*number*): (0.0) Concentration of the ions in (mol/liter)..
-* **seed** (*integer*): (1993) Seed for random number generator..
-* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable..
-* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary..
-* **remove_tmp** (*boolean*): (True) Remove temporal files..
-* **restart** (*boolean*): (False) Do not execute if output files exist..
-* **sandbox_path** (*string*): (./) Parent path to the sandbox directory..
-* **container_path** (*string*): (None) Path to the binary executable of your container..
-* **container_image** (*string*): (gromacs/gromacs:latest) Container Image identifier..
-* **container_volume_path** (*string*): (/data) Path to an internal directory in the container..
-* **container_working_dir** (*string*): (None) Path to the internal CWD in the container..
-* **container_user_id** (*string*): (None) User number id to be mapped inside the container..
-* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell..
+* **replaced_group** (*string*): (SOL) Group of molecules that will be replaced by the solvent.
+* **neutral** (*boolean*): (False) Neutralize the charge of the system.
+* **concentration** (*number*): (0.0) Concentration of the ions in (mol/liter).
+* **seed** (*integer*): (1993) Seed for random number generator.
+* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable.
+* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary.
+* **remove_tmp** (*boolean*): (True) Remove temporal files.
+* **restart** (*boolean*): (False) Do not execute if output files exist.
+* **sandbox_path** (*string*): (./) Parent path to the sandbox directory.
+* **container_path** (*string*): (None) Path to the binary executable of your container.
+* **container_image** (*string*): (gromacs/gromacs:latest) Container Image identifier.
+* **container_volume_path** (*string*): (/data) Path to an internal directory in the container.
+* **container_working_dir** (*string*): (None) Path to the internal CWD in the container.
+* **container_user_id** (*string*): (None) User number id to be mapped inside the container.
+* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell.
 ### YAML
 #### [Common config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_genion.yml)
 ```python
@@ -236,19 +263,23 @@ properties:
 #### [Docker config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_genion_docker.yml)
 ```python
 properties:
-  container_image: gromacs/gromacs:2025.2
+  concentration: 0.05
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
-  container_volume_path: /data
-  container_working_dir: /data
+  container_volume_path: /tmp
+  container_working_dir: /tmp
+  replaced_group: SOL
 
 ```
 #### [Singularity config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_genion_singularity.yml)
 ```python
 properties:
-  container_image: gromacs.simg
+  concentration: 0.05
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
-  container_volume_path: /data
-  container_working_dir: /data
+  container_volume_path: /tmp
+  container_working_dir: /tmp
+  replaced_group: SOL
 
 ```
 #### Command line
@@ -269,10 +300,12 @@ genion --config config_genion.yml --input_tpr_path genion.tpr --output_gro_path 
 ```python
 {
   "properties": {
+    "concentration": 0.05,
+    "replaced_group": "SOL",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/data",
-    "container_working_dir": "/data"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -280,10 +313,12 @@ genion --config config_genion.yml --input_tpr_path genion.tpr --output_gro_path 
 ```python
 {
   "properties": {
+    "concentration": 0.05,
+    "replaced_group": "SOL",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/data",
-    "container_working_dir": "/data"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -299,19 +334,24 @@ Command:
 ```python
 genrestr -h
 ```
-    usage: genrestr [-h] [-c CONFIG] --input_structure_path INPUT_STRUCTURE_PATH --output_itp_path OUTPUT_ITP_PATH [--input_ndx_path INPUT_NDX_PATH]
+    usage: genrestr [-h] [-c CONFIG] --input_structure_path INPUT_STRUCTURE_PATH -o OUTPUT_ITP_PATH [--input_ndx_path INPUT_NDX_PATH]
     
-    Wrapper for the GROMACS genion module.
+    Wrapper for the GROMACS genrestr module.
     
     options:
       -h, --help            show this help message and exit
       -c CONFIG, --config CONFIG
                             This file can be a YAML file, JSON file or JSON string
-      --input_ndx_path INPUT_NDX_PATH
     
     required arguments:
       --input_structure_path INPUT_STRUCTURE_PATH
-      --output_itp_path OUTPUT_ITP_PATH
+                            Path to the input structure PDB, GRO or TPR format. Accepted formats: pdb, gro, tpr.
+      -o OUTPUT_ITP_PATH, --output_itp_path OUTPUT_ITP_PATH
+                            Path the output ITP topology file with restrains. Accepted formats: itp.
+    
+    optional arguments:
+      --input_ndx_path INPUT_NDX_PATH
+                            Path to the input GROMACS index file, NDX format. Accepted formats: ndx.
 ### I / O Arguments
 Syntax: input_argument (datatype) : Definition
 
@@ -323,19 +363,19 @@ Config input / output arguments for this building block:
 Syntax: input_parameter (datatype) - (default_value) Definition
 
 Config parameters for this building block:
-* **restrained_group** (*string*): (system) Index group that will be restrained..
-* **force_constants** (*string*): (500 500 500) Array of three floats defining the force constants.
-* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable..
-* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary..
-* **remove_tmp** (*boolean*): (True) Remove temporal files..
-* **restart** (*boolean*): (False) Do not execute if output files exist..
-* **sandbox_path** (*string*): (./) Parent path to the sandbox directory..
-* **container_path** (*string*): (None) Path to the binary executable of your container..
-* **container_image** (*string*): (gromacs/gromacs:latest) Container Image identifier..
-* **container_volume_path** (*string*): (/data) Path to an internal directory in the container..
-* **container_working_dir** (*string*): (None) Path to the internal CWD in the container..
-* **container_user_id** (*string*): (None) User number id to be mapped inside the container..
-* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell..
+* **restrained_group** (*string*): (system) Index group that will be restrained.
+* **force_constants** (*string*): (500 500 500) Array of three floats defining the force constants
+* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable.
+* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary.
+* **remove_tmp** (*boolean*): (True) Remove temporal files.
+* **restart** (*boolean*): (False) Do not execute if output files exist.
+* **sandbox_path** (*string*): (./) Parent path to the sandbox directory.
+* **container_path** (*string*): (None) Path to the binary executable of your container.
+* **container_image** (*string*): (gromacs/gromacs:latest) Container Image identifier.
+* **container_volume_path** (*string*): (/data) Path to an internal directory in the container.
+* **container_working_dir** (*string*): (None) Path to the internal CWD in the container.
+* **container_user_id** (*string*): (None) User number id to be mapped inside the container.
+* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell.
 ### YAML
 #### [Common config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_genrestr.yml)
 ```python
@@ -347,19 +387,23 @@ properties:
 #### [Docker config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_genrestr_docker.yml)
 ```python
 properties:
-  container_image: gromacs/gromacs:2025.2
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
-  container_volume_path: /data
-  container_working_dir: /data
+  container_volume_path: /tmp
+  container_working_dir: /tmp
+  force_constants: 500 500 500
+  restrained_group: system
 
 ```
 #### [Singularity config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_genrestr_singularity.yml)
 ```python
 properties:
-  container_image: gromacs.simg
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
-  container_volume_path: /data
-  container_working_dir: /data
+  container_volume_path: /tmp
+  container_working_dir: /tmp
+  force_constants: 500 500 500
+  restrained_group: system
 
 ```
 #### Command line
@@ -380,10 +424,12 @@ genrestr --config config_genrestr.yml --input_structure_path genrestr.gro --outp
 ```python
 {
   "properties": {
+    "restrained_group": "system",
+    "force_constants": "500 500 500",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/data",
-    "container_working_dir": "/data"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -391,10 +437,12 @@ genrestr --config config_genrestr.yml --input_structure_path genrestr.gro --outp
 ```python
 {
   "properties": {
+    "restrained_group": "system",
+    "force_constants": "500 500 500",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/data",
-    "container_working_dir": "/data"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -410,7 +458,7 @@ Command:
 ```python
 gmxselect -h
 ```
-    usage: gmxselect [-h] [-c CONFIG] --input_structure_path INPUT_STRUCTURE_PATH --output_ndx_path OUTPUT_NDX_PATH [--input_ndx_path INPUT_NDX_PATH]
+    usage: gmxselect [-h] [-c CONFIG] --input_structure_path INPUT_STRUCTURE_PATH -o OUTPUT_NDX_PATH [--input_ndx_path INPUT_NDX_PATH]
     
     Wrapper for the GROMACS select module.
     
@@ -418,11 +466,16 @@ gmxselect -h
       -h, --help            show this help message and exit
       -c CONFIG, --config CONFIG
                             This file can be a YAML file, JSON file or JSON string
-      --input_ndx_path INPUT_NDX_PATH
     
     required arguments:
       --input_structure_path INPUT_STRUCTURE_PATH
-      --output_ndx_path OUTPUT_NDX_PATH
+                            Path to the input GRO/PDB/TPR file. Accepted formats: pdb, gro, tpr.
+      -o OUTPUT_NDX_PATH, --output_ndx_path OUTPUT_NDX_PATH
+                            Path to the output index NDX file. Accepted formats: ndx.
+    
+    optional arguments:
+      --input_ndx_path INPUT_NDX_PATH
+                            Path to the input index NDX file. Accepted formats: ndx.
 ### I / O Arguments
 Syntax: input_argument (datatype) : Definition
 
@@ -434,19 +487,19 @@ Config input / output arguments for this building block:
 Syntax: input_parameter (datatype) - (default_value) Definition
 
 Config parameters for this building block:
-* **selection** (*string*): (a CA C N O) Heavy atoms. Atom selection string..
-* **append** (*boolean*): (False) Append the content of the input_ndx_path to the output_ndx_path..
-* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary..
-* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable..
-* **remove_tmp** (*boolean*): (True) Remove temporal files..
-* **restart** (*boolean*): (False) Do not execute if output files exist..
-* **sandbox_path** (*string*): (./) Parent path to the sandbox directory..
-* **container_path** (*string*): (None) Path to the binary executable of your container..
-* **container_image** (*string*): (gromacs/gromacs:latest) Container Image identifier..
-* **container_volume_path** (*string*): (/data) Path to an internal directory in the container..
-* **container_working_dir** (*string*): (None) Path to the internal CWD in the container..
-* **container_user_id** (*string*): (None) User number id to be mapped inside the container..
-* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell..
+* **selection** (*string*): (a CA C N O) Heavy atoms. Atom selection string.
+* **append** (*boolean*): (False) Append the content of the input_ndx_path to the output_ndx_path.
+* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary.
+* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable.
+* **remove_tmp** (*boolean*): (True) Remove temporal files.
+* **restart** (*boolean*): (False) Do not execute if output files exist.
+* **sandbox_path** (*string*): (./) Parent path to the sandbox directory.
+* **container_path** (*string*): (None) Path to the binary executable of your container.
+* **container_image** (*string*): (gromacs/gromacs:latest) Container Image identifier.
+* **container_volume_path** (*string*): (/data) Path to an internal directory in the container.
+* **container_working_dir** (*string*): (None) Path to the internal CWD in the container.
+* **container_user_id** (*string*): (None) User number id to be mapped inside the container.
+* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell.
 ### YAML
 #### [Common config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_gmxselect.yml)
 ```python
@@ -458,19 +511,21 @@ properties:
 #### [Docker config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_gmxselect_docker.yml)
 ```python
 properties:
-  container_image: gromacs/gromacs:2025.2
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
-  container_volume_path: /inout
-  selection: \"Mynewgroup\" group \"Protein-H\" and not same residue as within 0.4
-    of resname ARG
+  container_volume_path: /tmp
+  container_working_dir: /tmp
+  selection: '"Mynewgroup" group "Protein-H" and not same residue as within 0.4 of
+    resname ARG'
 
 ```
 #### [Singularity config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_gmxselect_singularity.yml)
 ```python
 properties:
-  container_image: gromacs.simg
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
   selection: '"Mynewgroup" group "Protein-H" and not same residue as within 0.4 of
     resname ARG'
 
@@ -492,10 +547,11 @@ gmxselect --config config_gmxselect.yml --input_structure_path make_ndx.tpr --ou
 ```python
 {
   "properties": {
-    "selection": "\\\"Mynewgroup\\\" group \\\"Protein-H\\\" and not same residue as within 0.4 of resname ARG",
+    "selection": "\"Mynewgroup\" group \"Protein-H\" and not same residue as within 0.4 of resname ARG",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/inout"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -505,8 +561,9 @@ gmxselect --config config_gmxselect.yml --input_structure_path make_ndx.tpr --ou
   "properties": {
     "selection": "\"Mynewgroup\" group \"Protein-H\" and not same residue as within 0.4 of resname ARG",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/inout"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -522,7 +579,7 @@ Command:
 ```python
 grompp -h
 ```
-    usage: grompp [-h] [-c CONFIG] --input_gro_path INPUT_GRO_PATH --input_top_zip_path INPUT_TOP_ZIP_PATH --output_tpr_path OUTPUT_TPR_PATH [--input_cpt_path INPUT_CPT_PATH] [--input_ndx_path INPUT_NDX_PATH] [--input_mdp_path INPUT_MDP_PATH]
+    usage: grompp [-h] [-c CONFIG] --input_gro_path INPUT_GRO_PATH --input_top_zip_path INPUT_TOP_ZIP_PATH -o OUTPUT_TPR_PATH [--input_cpt_path INPUT_CPT_PATH] [--input_ndx_path INPUT_NDX_PATH] [--input_mdp_path INPUT_MDP_PATH]
     
     Wrapper for the GROMACS grompp module.
     
@@ -530,14 +587,22 @@ grompp -h
       -h, --help            show this help message and exit
       -c CONFIG, --config CONFIG
                             This file can be a YAML file, JSON file or JSON string
-      --input_cpt_path INPUT_CPT_PATH
-      --input_ndx_path INPUT_NDX_PATH
-      --input_mdp_path INPUT_MDP_PATH
     
     required arguments:
       --input_gro_path INPUT_GRO_PATH
+                            Path to the input GROMACS structure GRO file. Accepted formats: gro.
       --input_top_zip_path INPUT_TOP_ZIP_PATH
-      --output_tpr_path OUTPUT_TPR_PATH
+                            Path to the input GROMACS topology TOP and ITP files in zip format. Accepted formats: zip.
+      -o OUTPUT_TPR_PATH, --output_tpr_path OUTPUT_TPR_PATH
+                            Path to the output portable binary run file TPR. Accepted formats: tpr.
+    
+    optional arguments:
+      --input_cpt_path INPUT_CPT_PATH
+                            Path to the input GROMACS checkpoint file CPT. Accepted formats: cpt.
+      --input_ndx_path INPUT_NDX_PATH
+                            Path to the input GROMACS index files NDX. Accepted formats: ndx.
+      --input_mdp_path INPUT_MDP_PATH
+                            Path to the input GROMACS `MDP file <http://manual.gromacs.org/current/user-guide/mdp-options.html>`_. Accepted formats: mdp.
 ### I / O Arguments
 Syntax: input_argument (datatype) : Definition
 
@@ -552,20 +617,20 @@ Config input / output arguments for this building block:
 Syntax: input_parameter (datatype) - (default_value) Definition
 
 Config parameters for this building block:
-* **mdp** (*object*): ({}) MDP options specification..
-* **simulation_type** (*string*): (None) Default options for the mdp file. Each one creates a different mdp file. .
-* **maxwarn** (*integer*): (0) Maximum number of allowed warnings. If simulation_type is index default is 10..
-* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable..
-* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary..
-* **remove_tmp** (*boolean*): (True) Remove temporal files..
-* **restart** (*boolean*): (False) Do not execute if output files exist..
-* **sandbox_path** (*string*): (./) Parent path to the sandbox directory..
-* **container_path** (*string*): (None) Path to the binary executable of your container..
-* **container_image** (*string*): (gromacs/gromacs:latest) Container Image identifier..
-* **container_volume_path** (*string*): (/data) Path to an internal directory in the container..
-* **container_working_dir** (*string*): (None) Path to the internal CWD in the container..
-* **container_user_id** (*string*): (None) User number id to be mapped inside the container..
-* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell..
+* **mdp** (*object*): ({}) MDP options specification.
+* **simulation_type** (*string*): (None) Default options for the mdp file. Each one creates a different mdp file. 
+* **maxwarn** (*integer*): (0) Maximum number of allowed warnings. If simulation_type is index default is 10.
+* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable.
+* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary.
+* **remove_tmp** (*boolean*): (True) Remove temporal files.
+* **restart** (*boolean*): (False) Do not execute if output files exist.
+* **sandbox_path** (*string*): (./) Parent path to the sandbox directory.
+* **container_path** (*string*): (None) Path to the binary executable of your container.
+* **container_image** (*string*): (gromacs/gromacs:latest) Container Image identifier.
+* **container_volume_path** (*string*): (/data) Path to an internal directory in the container.
+* **container_working_dir** (*string*): (None) Path to the internal CWD in the container.
+* **container_user_id** (*string*): (None) User number id to be mapped inside the container.
+* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell.
 ### YAML
 #### [Common config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_grompp.yml)
 ```python
@@ -578,9 +643,10 @@ properties:
 #### [Docker config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_grompp_docker.yml)
 ```python
 properties:
-  container_image: gromacs/gromacs:2025.2
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
   container_volume_path: /tmp
+  container_working_dir: /tmp
   maxwarn: 1
   mdp:
     ld-seed: '1'
@@ -589,10 +655,10 @@ properties:
 #### [Singularity config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_grompp_singularity.yml)
 ```python
 properties:
-  container_image: gromacs.simg
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
-  container_volume_path: /inout
-  container_working_dir: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
   maxwarn: 1
   mdp:
     ld-seed: '1'
@@ -623,8 +689,9 @@ grompp --config config_grompp.yml --input_gro_path grompp.gro --input_top_zip_pa
       "ld-seed": "1"
     },
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/tmp"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -637,9 +704,9 @@ grompp --config config_grompp.yml --input_gro_path grompp.gro --input_top_zip_pa
       "ld-seed": "1"
     },
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/inout",
-    "container_working_dir": "/inout"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -655,7 +722,7 @@ Command:
 ```python
 grompp_mdrun -h
 ```
-    usage: grompp_mdrun [-h] [-c CONFIG] --input_gro_path INPUT_GRO_PATH --input_top_zip_path INPUT_TOP_ZIP_PATH --output_trr_path OUTPUT_TRR_PATH --output_gro_path OUTPUT_GRO_PATH --output_edr_path OUTPUT_EDR_PATH --output_log_path OUTPUT_LOG_PATH [--input_cpt_path INPUT_CPT_PATH] [--input_ndx_path INPUT_NDX_PATH] [--input_mdp_path INPUT_MDP_PATH] [--output_xtc_path OUTPUT_XTC_PATH] [--output_cpt_path OUTPUT_CPT_PATH] [--output_dhdl_path OUTPUT_DHDL_PATH] [--output_tpr_path OUTPUT_TPR_PATH]
+    usage: grompp_mdrun [-h] [-c CONFIG] --input_gro_path INPUT_GRO_PATH --input_top_zip_path INPUT_TOP_ZIP_PATH --output_trr_path OUTPUT_TRR_PATH --output_gro_path OUTPUT_GRO_PATH --output_edr_path OUTPUT_EDR_PATH --output_log_path OUTPUT_LOG_PATH [--input_cpt_path INPUT_CPT_PATH] [--input_ndx_path INPUT_NDX_PATH] [--input_mdp_path INPUT_MDP_PATH] [--output_xtc_path OUTPUT_XTC_PATH] [--output_cpt_path OUTPUT_CPT_PATH] [--output_dhdl_path OUTPUT_DHDL_PATH]
     
     Wrapper for the GROMACS grompp_mdrun module.
     
@@ -663,21 +730,34 @@ grompp_mdrun -h
       -h, --help            show this help message and exit
       -c CONFIG, --config CONFIG
                             This file can be a YAML file, JSON file or JSON string
-      --input_cpt_path INPUT_CPT_PATH
-      --input_ndx_path INPUT_NDX_PATH
-      --input_mdp_path INPUT_MDP_PATH
-      --output_xtc_path OUTPUT_XTC_PATH
-      --output_cpt_path OUTPUT_CPT_PATH
-      --output_dhdl_path OUTPUT_DHDL_PATH
-      --output_tpr_path OUTPUT_TPR_PATH
     
     required arguments:
       --input_gro_path INPUT_GRO_PATH
+                            Path to the input GROMACS structure GRO file. Accepted formats: gro.
       --input_top_zip_path INPUT_TOP_ZIP_PATH
+                            Path to the input GROMACS topology TOP and ITP files in zip format. Accepted formats: zip.
       --output_trr_path OUTPUT_TRR_PATH
+                            Path to the GROMACS uncompressed raw trajectory file TRR. Accepted formats: trr.
       --output_gro_path OUTPUT_GRO_PATH
+                            Path to the output GROMACS structure GRO file. Accepted formats: gro.
       --output_edr_path OUTPUT_EDR_PATH
+                            Path to the output GROMACS portable energy file EDR. Accepted formats: edr.
       --output_log_path OUTPUT_LOG_PATH
+                            Path to the output GROMACS trajectory log file LOG. Accepted formats: log.
+    
+    optional arguments:
+      --input_cpt_path INPUT_CPT_PATH
+                            Path to the input GROMACS checkpoint file CPT. Accepted formats: cpt.
+      --input_ndx_path INPUT_NDX_PATH
+                            Path to the input GROMACS index files NDX. Accepted formats: ndx.
+      --input_mdp_path INPUT_MDP_PATH
+                            Path to the input GROMACS `MDP file <http://manual.gromacs.org/current/user-guide/mdp-options.html>`_. Accepted formats: mdp.
+      --output_xtc_path OUTPUT_XTC_PATH
+                            Path to the GROMACS compressed trajectory file XTC. Accepted formats: xtc.
+      --output_cpt_path OUTPUT_CPT_PATH
+                            Path to the output GROMACS checkpoint file CPT. Accepted formats: cpt.
+      --output_dhdl_path OUTPUT_DHDL_PATH
+                            Path to the output dhdl.xvg file only used when free energy calculation is turned on. Accepted formats: xvg.
 ### I / O Arguments
 Syntax: input_argument (datatype) : Definition
 
@@ -698,31 +778,31 @@ Config input / output arguments for this building block:
 Syntax: input_parameter (datatype) - (default_value) Definition
 
 Config parameters for this building block:
-* **mdp** (*object*): ({}) MDP options specification..
-* **simulation_type** (*string*): (minimization) Default options for the mdp file. Each creates a different mdp file. .
-* **maxwarn** (*integer*): (10) Maximum number of allowed warnings..
-* **mpi_bin** (*string*): (None) Path to the MPI runner. Usually "mpirun" or "srun"..
-* **mpi_np** (*string*): (None) Number of MPI processes. Usually an integer bigger than 1..
-* **mpi_hostlist** (*string*): (None) Path to the MPI hostlist file..
-* **checkpoint_time** (*integer*): (15) Checkpoint writing interval in minutes. Only enabled if an output_cpt_path is provided..
-* **num_threads** (*integer*): (0) Let GROMACS guess. The number of threads that are going to be used..
-* **num_threads_mpi** (*integer*): (0) Let GROMACS guess. The number of GROMACS MPI threads that are going to be used..
-* **num_threads_omp** (*integer*): (0) Let GROMACS guess. The number of GROMACS OPENMP threads that are going to be used..
-* **num_threads_omp_pme** (*integer*): (0) Let GROMACS guess. The number of GROMACS OPENMP_PME threads that are going to be used..
-* **use_gpu** (*boolean*): (False) Use settings appropriate for GPU. Adds: -nb gpu -pme gpu.
-* **gpu_id** (*string*): (None) list of unique GPU device IDs available to use..
-* **gpu_tasks** (*string*): (None) list of GPU device IDs, mapping each PP task on each node to a device..
-* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable..
-* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary..
-* **remove_tmp** (*boolean*): (True) Remove temporal files..
-* **restart** (*boolean*): (False) Do not execute if output files exist..
-* **sandbox_path** (*string*): (./) Parent path to the sandbox directory..
-* **container_path** (*string*): (None) Path to the binary executable of your container..
-* **container_image** (*string*): (gromacs/gromacs:latest) Container Image identifier..
-* **container_volume_path** (*string*): (/data) Path to an internal directory in the container..
-* **container_working_dir** (*string*): (None) Path to the internal CWD in the container..
-* **container_user_id** (*string*): (None) User number id to be mapped inside the container..
-* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell..
+* **mdp** (*object*): ({}) MDP options specification.
+* **simulation_type** (*string*): (minimization) Default options for the mdp file. Each creates a different mdp file. 
+* **maxwarn** (*integer*): (10) Maximum number of allowed warnings.
+* **mpi_bin** (*string*): (None) Path to the MPI runner. Usually "mpirun" or "srun".
+* **mpi_np** (*string*): (None) Number of MPI processes. Usually an integer bigger than 1.
+* **mpi_hostlist** (*string*): (None) Path to the MPI hostlist file.
+* **checkpoint_time** (*integer*): (15) Checkpoint writing interval in minutes. Only enabled if an output_cpt_path is provided.
+* **num_threads** (*integer*): (0) Let GROMACS guess. The number of threads that are going to be used.
+* **num_threads_mpi** (*integer*): (0) Let GROMACS guess. The number of GROMACS MPI threads that are going to be used.
+* **num_threads_omp** (*integer*): (0) Let GROMACS guess. The number of GROMACS OPENMP threads that are going to be used.
+* **num_threads_omp_pme** (*integer*): (0) Let GROMACS guess. The number of GROMACS OPENMP_PME threads that are going to be used.
+* **use_gpu** (*boolean*): (False) Use settings appropriate for GPU. Adds: -nb gpu -pme gpu
+* **gpu_id** (*string*): (None) list of unique GPU device IDs available to use.
+* **gpu_tasks** (*string*): (None) list of GPU device IDs, mapping each PP task on each node to a device.
+* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable.
+* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary.
+* **remove_tmp** (*boolean*): (True) Remove temporal files.
+* **restart** (*boolean*): (False) Do not execute if output files exist.
+* **sandbox_path** (*string*): (./) Parent path to the sandbox directory.
+* **container_path** (*string*): (None) Path to the binary executable of your container.
+* **container_image** (*string*): (gromacs/gromacs:latest) Container Image identifier.
+* **container_volume_path** (*string*): (/data) Path to an internal directory in the container.
+* **container_working_dir** (*string*): (None) Path to the internal CWD in the container.
+* **container_user_id** (*string*): (None) User number id to be mapped inside the container.
+* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell.
 ### YAML
 #### [Common config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_grompp_mdrun.yml)
 ```python
@@ -740,9 +820,10 @@ properties:
 ```python
 properties:
   binary_path: gmx
-  container_image: gromacs/gromacs:2025.2
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
   maxwarn: 1
   mdp:
     dt: 0.0001
@@ -755,9 +836,10 @@ properties:
 ```python
 properties:
   binary_path: gmx
-  container_image: gromacs.simg
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
   mdp:
     dt: 0.0001
     ld-seed: '1'
@@ -798,8 +880,9 @@ grompp_mdrun --config config_grompp_mdrun.yml --input_gro_path grompp.gro --inpu
     "num_threads": 0,
     "binary_path": "gmx",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/inout"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -815,8 +898,9 @@ grompp_mdrun --config config_grompp_mdrun.yml --input_gro_path grompp.gro --inpu
     "num_threads": 0,
     "binary_path": "gmx",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/inout"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -832,7 +916,7 @@ Command:
 ```python
 make_ndx -h
 ```
-    usage: make_ndx [-h] [-c CONFIG] --input_structure_path INPUT_STRUCTURE_PATH --output_ndx_path OUTPUT_NDX_PATH [--input_ndx_path INPUT_NDX_PATH]
+    usage: make_ndx [-h] [-c CONFIG] --input_structure_path INPUT_STRUCTURE_PATH -o OUTPUT_NDX_PATH [--input_ndx_path INPUT_NDX_PATH]
     
     Wrapper for the GROMACS make_ndx module.
     
@@ -840,11 +924,16 @@ make_ndx -h
       -h, --help            show this help message and exit
       -c CONFIG, --config CONFIG
                             This file can be a YAML file, JSON file or JSON string
-      --input_ndx_path INPUT_NDX_PATH
     
     required arguments:
       --input_structure_path INPUT_STRUCTURE_PATH
-      --output_ndx_path OUTPUT_NDX_PATH
+                            Path to the input GRO/PDB/TPR file. Accepted formats: gro, pdb, tpr.
+      -o OUTPUT_NDX_PATH, --output_ndx_path OUTPUT_NDX_PATH
+                            Path to the output index NDX file. Accepted formats: ndx.
+    
+    optional arguments:
+      --input_ndx_path INPUT_NDX_PATH
+                            Path to the input index NDX file. Accepted formats: ndx.
 ### I / O Arguments
 Syntax: input_argument (datatype) : Definition
 
@@ -856,18 +945,18 @@ Config input / output arguments for this building block:
 Syntax: input_parameter (datatype) - (default_value) Definition
 
 Config parameters for this building block:
-* **selection** (*string*): (a CA C N O) Heavy atoms. Atom selection string..
-* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable..
-* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary..
-* **remove_tmp** (*boolean*): (True) Remove temporal files..
-* **restart** (*boolean*): (False) Do not execute if output files exist..
-* **sandbox_path** (*string*): (./) Parent path to the sandbox directory..
-* **container_path** (*string*): (None) Path to the binary executable of your container..
-* **container_image** (*string*): (gromacs/gromacs:latest) Container Image identifier..
-* **container_volume_path** (*string*): (/data) Path to an internal directory in the container..
-* **container_working_dir** (*string*): (None) Path to the internal CWD in the container..
-* **container_user_id** (*string*): (None) User number id to be mapped inside the container..
-* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell..
+* **selection** (*string*): (a CA C N O) Heavy atoms. Atom selection string.
+* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable.
+* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary.
+* **remove_tmp** (*boolean*): (True) Remove temporal files.
+* **restart** (*boolean*): (False) Do not execute if output files exist.
+* **sandbox_path** (*string*): (./) Parent path to the sandbox directory.
+* **container_path** (*string*): (None) Path to the binary executable of your container.
+* **container_image** (*string*): (gromacs/gromacs:latest) Container Image identifier.
+* **container_volume_path** (*string*): (/data) Path to an internal directory in the container.
+* **container_working_dir** (*string*): (None) Path to the internal CWD in the container.
+* **container_user_id** (*string*): (None) User number id to be mapped inside the container.
+* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell.
 ### YAML
 #### [Common config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_make_ndx.yml)
 ```python
@@ -882,17 +971,29 @@ properties:
 #### [Docker config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_make_ndx_docker.yml)
 ```python
 properties:
-  container_image: gromacs/gromacs:2025.2
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
   container_volume_path: /tmp
+  container_working_dir: /tmp21.4
+  selection: 'a C*
+
+    0 & ! 13
+
+    name 14 FREEZE'
 
 ```
 #### [Singularity config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_make_ndx_singularity.yml)
 ```python
 properties:
-  container_image: gromacs.simg
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
   container_volume_path: /tmp
+  container_working_dir: /tmp
+  selection: 'a C*
+
+    0 & ! 13
+
+    name 14 FREEZE'
 
 ```
 #### Command line
@@ -912,9 +1013,11 @@ make_ndx --config config_make_ndx.yml --input_structure_path make_ndx.tpr --outp
 ```python
 {
   "properties": {
+    "selection": "a C*\n0 & ! 13\nname 14 FREEZE",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/tmp"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp21.4"
   }
 }
 ```
@@ -922,9 +1025,11 @@ make_ndx --config config_make_ndx.yml --input_structure_path make_ndx.tpr --outp
 ```python
 {
   "properties": {
+    "selection": "a C*\n0 & ! 13\nname 14 FREEZE",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/tmp"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -948,17 +1053,28 @@ mdrun -h
       -h, --help            show this help message and exit
       -c CONFIG, --config CONFIG
                             This file can be a YAML file, JSON file or JSON string
-      --output_trr_path OUTPUT_TRR_PATH
-      --input_cpt_path INPUT_CPT_PATH
-      --output_xtc_path OUTPUT_XTC_PATH
-      --output_cpt_path OUTPUT_CPT_PATH
-      --output_dhdl_path OUTPUT_DHDL_PATH
     
     required arguments:
       --input_tpr_path INPUT_TPR_PATH
+                            Path to the portable binary run input file TPR. Accepted formats: tpr.
       --output_gro_path OUTPUT_GRO_PATH
+                            Path to the output GROMACS structure GRO file. Accepted formats: gro.
       --output_edr_path OUTPUT_EDR_PATH
+                            Path to the output GROMACS portable energy file EDR. Accepted formats: edr.
       --output_log_path OUTPUT_LOG_PATH
+                            Path to the output GROMACS trajectory log file LOG. Accepted formats: log.
+    
+    optional arguments:
+      --output_trr_path OUTPUT_TRR_PATH
+                            Path to the GROMACS uncompressed raw trajectory file TRR. Accepted formats: trr.
+      --input_cpt_path INPUT_CPT_PATH
+                            Path to the input GROMACS checkpoint file CPT. Accepted formats: cpt.
+      --output_xtc_path OUTPUT_XTC_PATH
+                            Path to the GROMACS compressed trajectory file XTC. Accepted formats: xtc.
+      --output_cpt_path OUTPUT_CPT_PATH
+                            Path to the output GROMACS checkpoint file CPT. Accepted formats: cpt.
+      --output_dhdl_path OUTPUT_DHDL_PATH
+                            Path to the output dhdl.xvg file only used when free energy calculation is turned on. Accepted formats: xvg.
 ### I / O Arguments
 Syntax: input_argument (datatype) : Definition
 
@@ -976,28 +1092,29 @@ Config input / output arguments for this building block:
 Syntax: input_parameter (datatype) - (default_value) Definition
 
 Config parameters for this building block:
-* **mpi_bin** (*string*): (None) Path to the MPI runner. Usually "mpirun" or "srun"..
-* **mpi_np** (*integer*): (0) Number of MPI processes. Usually an integer bigger than 1..
-* **mpi_flags** (*string*): (None) Path to the MPI hostlist file..
-* **checkpoint_time** (*integer*): (15) Checkpoint writing interval in minutes. Only enabled if an output_cpt_path is provided..
-* **num_threads** (*integer*): (0) Let GROMACS guess. The number of threads that are going to be used..
-* **num_threads_mpi** (*integer*): (0) Let GROMACS guess. The number of GROMACS MPI threads that are going to be used..
-* **num_threads_omp** (*integer*): (0) Let GROMACS guess. The number of GROMACS OPENMP threads that are going to be used..
-* **num_threads_omp_pme** (*integer*): (0) Let GROMACS guess. The number of GROMACS OPENMP_PME threads that are going to be used..
-* **use_gpu** (*boolean*): (False) Use settings appropriate for GPU. Adds: -nb gpu -pme gpu.
-* **gpu_id** (*string*): (None) list of unique GPU device IDs available to use..
-* **gpu_tasks** (*string*): (None) list of GPU device IDs, mapping each PP task on each node to a device..
-* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable..
-* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary..
-* **remove_tmp** (*boolean*): (True) Remove temporal files..
-* **restart** (*boolean*): (False) Do not execute if output files exist..
-* **sandbox_path** (*string*): (./) Parent path to the sandbox directory..
-* **container_path** (*string*): (None) Path to the binary executable of your container..
-* **container_image** (*string*): (None) Container Image identifier..
-* **container_volume_path** (*string*): (/data) Path to an internal directory in the container..
-* **container_working_dir** (*string*): (None) Path to the internal CWD in the container..
-* **container_user_id** (*string*): (None) User number id to be mapped inside the container..
-* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell..
+* **mpi_bin** (*string*): (None) Path to the MPI runner. Usually "mpirun" or "srun".
+* **mpi_np** (*integer*): (0) Number of MPI processes. Usually an integer bigger than 1.
+* **mpi_flags** (*string*): (None) Path to the MPI hostlist file.
+* **checkpoint_time** (*integer*): (15) Checkpoint writing interval in minutes. Only enabled if an output_cpt_path is provided.
+* **noappend** (*boolean*): (False) Include the noappend flag to open new output files and add the simulation part number to all output file names
+* **num_threads** (*integer*): (0) Let GROMACS guess. The number of threads that are going to be used.
+* **num_threads_mpi** (*integer*): (0) Let GROMACS guess. The number of GROMACS MPI threads that are going to be used.
+* **num_threads_omp** (*integer*): (0) Let GROMACS guess. The number of GROMACS OPENMP threads that are going to be used.
+* **num_threads_omp_pme** (*integer*): (0) Let GROMACS guess. The number of GROMACS OPENMP_PME threads that are going to be used.
+* **use_gpu** (*boolean*): (False) Use settings appropriate for GPU. Adds: -nb gpu -pme gpu
+* **gpu_id** (*string*): (None) list of unique GPU device IDs available to use.
+* **gpu_tasks** (*string*): (None) list of GPU device IDs, mapping each PP task on each node to a device.
+* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable.
+* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary.
+* **remove_tmp** (*boolean*): (True) Remove temporal files.
+* **restart** (*boolean*): (False) Do not execute if output files exist.
+* **sandbox_path** (*string*): (./) Parent path to the sandbox directory.
+* **container_path** (*string*): (None) Path to the binary executable of your container.
+* **container_image** (*string*): (None) Container Image identifier.
+* **container_volume_path** (*string*): (/data) Path to an internal directory in the container.
+* **container_working_dir** (*string*): (None) Path to the internal CWD in the container.
+* **container_user_id** (*string*): (None) User number id to be mapped inside the container.
+* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell.
 ### YAML
 #### [Common config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_mdrun.yml)
 ```python
@@ -1009,17 +1126,23 @@ properties:
 #### [Docker config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_mdrun_docker.yml)
 ```python
 properties:
-  container_image: gromacs/gromacs:2025.2
+  binary_path: gmx
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
+  num_threads: 0
 
 ```
 #### [Singularity config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_mdrun_singularity.yml)
 ```python
 properties:
-  container_image: gromacs.simg
+  binary_path: gmx
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
+  num_threads: 0
 
 ```
 #### Command line
@@ -1040,9 +1163,12 @@ mdrun --config config_mdrun.yml --input_tpr_path mdrun.tpr --output_gro_path ref
 ```python
 {
   "properties": {
+    "num_threads": 0,
+    "binary_path": "gmx",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/inout"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -1050,15 +1176,96 @@ mdrun --config config_mdrun.yml --input_tpr_path mdrun.tpr --output_gro_path ref
 ```python
 {
   "properties": {
+    "num_threads": 0,
+    "binary_path": "gmx",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/inout"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
 #### Command line
 ```python
 mdrun --config config_mdrun.json --input_tpr_path mdrun.tpr --output_gro_path ref_mdrun.gro --output_edr_path ref_mdrun.edr --output_log_path ref_mdrun.log --output_trr_path ref_mdrun.trr --input_cpt_path input.cpt --output_xtc_path output.xtc --output_cpt_path output.cpt --output_dhdl_path output.xvg
+```
+
+## Mdrun_plumed
+Wrapper of the GROMACS mdrun module.
+### Get help
+Command:
+```python
+mdrun_plumed -h
+```
+    /bin/sh: 1: mdrun_plumed: not found
+### I / O Arguments
+Syntax: input_argument (datatype) : Definition
+
+Config input / output arguments for this building block:
+* **input_tpr_path** (*string*): Path to the portable binary run input file TPR. File type: input. [Sample file](https://github.com/bioexcel/biobb_gromacs/raw/master/biobb_gromacs/test/data/gromacs/mdrun.tpr). Accepted formats: TPR
+* **output_gro_path** (*string*): Path to the output GROMACS structure GRO file. File type: output. [Sample file](https://github.com/bioexcel/biobb_gromacs/raw/master/biobb_gromacs/test/reference/gromacs/ref_mdrun.gro). Accepted formats: GRO
+* **output_edr_path** (*string*): Path to the output GROMACS portable energy file EDR. File type: output. [Sample file](https://github.com/bioexcel/biobb_gromacs/raw/master/biobb_gromacs/test/reference/gromacs/ref_mdrun.edr). Accepted formats: EDR
+* **output_log_path** (*string*): Path to the output GROMACS trajectory log file LOG. File type: output. [Sample file](https://github.com/bioexcel/biobb_gromacs/raw/master/biobb_gromacs/test/reference/gromacs/ref_mdrun.log). Accepted formats: LOG
+* **output_trr_path** (*string*): Path to the GROMACS uncompressed raw trajectory file TRR. File type: output. [Sample file](https://github.com/bioexcel/biobb_gromacs/raw/master/biobb_gromacs/test/reference/gromacs/ref_mdrun.trr). Accepted formats: TRR
+* **input_cpt_path** (*string*): Path to the input GROMACS checkpoint file CPT. File type: input. [Sample file](None). Accepted formats: CPT
+* **output_xtc_path** (*string*): Path to the GROMACS compressed trajectory file XTC. File type: output. [Sample file](None). Accepted formats: XTC
+* **output_cpt_path** (*string*): Path to the output GROMACS checkpoint file CPT. File type: output. [Sample file](None). Accepted formats: CPT
+* **output_dhdl_path** (*string*): Path to the output dhdl.xvg file only used when free energy calculation is turned on. File type: output. [Sample file](None). Accepted formats: XVG
+* **input_plumed_path** (*string*): Path to the main PLUMED input file. If provided, PLUMED will be used during the simulation. All files used by the main PLUMED input file must exist in the input_plumed_folder and be called with just their name. Make sure to provide a GROMACS version with the PLUMED patch. File type: input. [Sample file](None). Accepted formats: DAT
+* **input_plumed_folder** (*dir*): Path to the folder with all files needed by the main PLUMED input file, see input_plumed_path. File type: input. [Sample file](None). Accepted formats: DIRECTORY
+* **output_plumed_folder** (*dir*): Folder where PLUMED generated output files will be saved. File type: output. [Sample file](None). Accepted formats: DIRECTORY
+### Config
+Syntax: input_parameter (datatype) - (default_value) Definition
+
+Config parameters for this building block:
+* **mpi_bin** (*string*): (None) Path to the MPI runner. Usually "mpirun" or "srun".
+* **mpi_np** (*integer*): (0) Number of MPI processes. Usually an integer bigger than 1.
+* **mpi_flags** (*string*): (None) Path to the MPI hostlist file.
+* **checkpoint_time** (*integer*): (15) Checkpoint writing interval in minutes. Only enabled if an output_cpt_path is provided.
+* **noappend** (*boolean*): (False) Include the noappend flag to open new output files and add the simulation part number to all output file names
+* **num_threads** (*integer*): (0) Let GROMACS guess. The number of threads that are going to be used.
+* **num_threads_mpi** (*integer*): (0) Let GROMACS guess. The number of GROMACS MPI threads that are going to be used.
+* **num_threads_omp** (*integer*): (0) Let GROMACS guess. The number of GROMACS OPENMP threads that are going to be used.
+* **num_threads_omp_pme** (*integer*): (0) Let GROMACS guess. The number of GROMACS OPENMP_PME threads that are going to be used.
+* **use_gpu** (*boolean*): (False) Use settings appropriate for GPU. Adds: -nb gpu -pme gpu
+* **gpu_id** (*string*): (None) list of unique GPU device IDs available to use.
+* **gpu_tasks** (*string*): (None) list of GPU device IDs, mapping each PP task on each node to a device.
+* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable.
+* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary.
+* **remove_tmp** (*boolean*): (True) Remove temporal files.
+* **restart** (*boolean*): (False) Do not execute if output files exist.
+* **sandbox_path** (*string*): (./) Parent path to the sandbox directory.
+* **container_path** (*string*): (None) Path to the binary executable of your container.
+* **container_image** (*string*): (None) Container Image identifier.
+* **container_volume_path** (*string*): (/data) Path to an internal directory in the container.
+* **container_working_dir** (*string*): (None) Path to the internal CWD in the container.
+* **container_user_id** (*string*): (None) User number id to be mapped inside the container.
+* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell.
+### YAML
+#### [Common config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_mdrun_plumed.yml)
+```python
+properties:
+  binary_path: gmx
+  num_threads: 0
+
+```
+#### Command line
+```python
+mdrun_plumed --config config_mdrun_plumed.yml --input_tpr_path mdrun.tpr --output_gro_path ref_mdrun.gro --output_edr_path ref_mdrun.edr --output_log_path ref_mdrun.log --output_trr_path ref_mdrun.trr --input_cpt_path input.cpt --output_xtc_path output.xtc --output_cpt_path output.cpt --output_dhdl_path output.xvg --input_plumed_path input.dat --input_plumed_folder input.directory --output_plumed_folder output.directory
+```
+### JSON
+#### [Common config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_mdrun_plumed.json)
+```python
+{
+  "properties": {
+    "num_threads": 0,
+    "binary_path": "gmx"
+  }
+}
+```
+#### Command line
+```python
+mdrun_plumed --config config_mdrun_plumed.json --input_tpr_path mdrun.tpr --output_gro_path ref_mdrun.gro --output_edr_path ref_mdrun.edr --output_log_path ref_mdrun.log --output_trr_path ref_mdrun.trr --input_cpt_path input.cpt --output_xtc_path output.xtc --output_cpt_path output.cpt --output_dhdl_path output.xvg --input_plumed_path input.dat --input_plumed_folder input.directory --output_plumed_folder output.directory
 ```
 
 ## Ndx2resttop
@@ -1068,9 +1275,9 @@ Command:
 ```python
 ndx2resttop -h
 ```
-    usage: ndx2resttop [-h] [-c CONFIG] --input_ndx_path INPUT_NDX_PATH --input_top_zip_path INPUT_TOP_ZIP_PATH --output_top_zip_path OUTPUT_TOP_ZIP_PATH
+    usage: ndx2resttop [-h] [-c CONFIG] --input_ndx_path INPUT_NDX_PATH --input_top_zip_path INPUT_TOP_ZIP_PATH -o OUTPUT_TOP_ZIP_PATH
     
-    Wrapper for the GROMACS extra ndx2resttop module.
+    Generate a restrained topology from an index NDX file.
     
     options:
       -h, --help            show this help message and exit
@@ -1079,8 +1286,11 @@ ndx2resttop -h
     
     required arguments:
       --input_ndx_path INPUT_NDX_PATH
+                            Path to the input NDX index file. Accepted formats: ndx.
       --input_top_zip_path INPUT_TOP_ZIP_PATH
-      --output_top_zip_path OUTPUT_TOP_ZIP_PATH
+                            Path the input TOP topology in zip format. Accepted formats: zip.
+      -o OUTPUT_TOP_ZIP_PATH, --output_top_zip_path OUTPUT_TOP_ZIP_PATH
+                            Path the output TOP topology in zip format. Accepted formats: zip.
 ### I / O Arguments
 Syntax: input_argument (datatype) : Definition
 
@@ -1092,14 +1302,14 @@ Config input / output arguments for this building block:
 Syntax: input_parameter (datatype) - (default_value) Definition
 
 Config parameters for this building block:
-* **posres_names** (*array*): (CUSTOM_POSRES) String with names of the position restraints to be included in the topology file separated by spaces. If provided it should match the length of the ref_rest_chain_triplet_list..
-* **force_constants** (*string*): (500 500 500) Array of three floats defining the force constants..
-* **ref_rest_chain_triplet_list** (*string*): (None) Triplet list composed by (reference group, restrain group, chain) list..
+* **posres_names** (*string*): (CUSTOM_POSRES) Space-separated preprocessor macro names, one per triplet (e.g. ``"CHAIN_A_POSRES CHAIN_B_POSRES"``). Activated at grompp time via ``-D <name>``. Must match the length of ref_rest_mol_triplet_list.
+* **force_constants** (*string*): (500 500 500) Three space-separated force constants Fx Fy Fz in kJ/mol/nm². Written verbatim into each ITP line so the same value is applied to every restrained atom.
+* **ref_rest_mol_triplet_list** (*string*): (None) Comma-separated triplets ``(reference_group, restrain_group, molecule_name)``, one per molecule to restrain.``reference_group``: NDX group containing *all* atoms of the molecule in global (system-wide) GROMACS numbering. Used only as a coordinate frame to convert global indices to molecule-local 1-based indices. Example: ``r_1-9280``. ``restrain_group``: NDX group with the subset of atoms to actually restrain (must be a strict subset of reference_group). Example: ``P_&_r_1-9280``. ``molecule_name``: the ``[ moleculetype ]`` name in the topology used to locate where to splice the ``#ifdef`` block. Example: ``1TSR``.
 ### YAML
 #### [Common config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_ndx2resttop.yml)
 ```python
 properties:
-  ref_rest_chain_triplet_list: ( Chain_A, Chain_A_noMut, A ), ( Chain_B, Chain_B_noMut,
+  ref_rest_mol_triplet_list: ( Chain_A, Chain_A_noMut, A ), ( Chain_B, Chain_B_noMut,
     B ), ( Chain_C, Chain_C_noMut, C ), ( Chain_D, Chain_D_noMut, D )
 
 ```
@@ -1112,7 +1322,7 @@ ndx2resttop --config config_ndx2resttop.yml --input_ndx_path ndx2resttop.ndx --i
 ```python
 {
   "properties": {
-    "ref_rest_chain_triplet_list": "( Chain_A, Chain_A_noMut, A ), ( Chain_B, Chain_B_noMut, B ), ( Chain_C, Chain_C_noMut, C ), ( Chain_D, Chain_D_noMut, D )"
+    "ref_rest_mol_triplet_list": "( Chain_A, Chain_A_noMut, A ), ( Chain_B, Chain_B_noMut, B ), ( Chain_C, Chain_C_noMut, C ), ( Chain_D, Chain_D_noMut, D )"
   }
 }
 ```
@@ -1128,9 +1338,9 @@ Command:
 ```python
 pdb2gmx -h
 ```
-    usage: pdb2gmx [-h] [-c CONFIG] --input_pdb_path INPUT_PDB_PATH --output_gro_path OUTPUT_GRO_PATH --output_top_zip_path OUTPUT_TOP_ZIP_PATH
+    usage: pdb2gmx [-h] [-c CONFIG] -i INPUT_PDB_PATH --output_gro_path OUTPUT_GRO_PATH --output_top_zip_path OUTPUT_TOP_ZIP_PATH
     
-    Wrapper of the GROMACS pdb2gmx module.
+    Wrapper for the GROMACS pdb2gmx module.
     
     options:
       -h, --help            show this help message and exit
@@ -1138,9 +1348,12 @@ pdb2gmx -h
                             This file can be a YAML file, JSON file or JSON string
     
     required arguments:
-      --input_pdb_path INPUT_PDB_PATH
+      -i INPUT_PDB_PATH, --input_pdb_path INPUT_PDB_PATH
+                            Path to the input PDB file. Accepted formats: pdb.
       --output_gro_path OUTPUT_GRO_PATH
+                            Path to the output GRO file. Accepted formats: gro.
       --output_top_zip_path OUTPUT_TOP_ZIP_PATH
+                            Path the output TOP topology in zip format. Accepted formats: zip.
 ### I / O Arguments
 Syntax: input_argument (datatype) : Definition
 
@@ -1152,27 +1365,27 @@ Config input / output arguments for this building block:
 Syntax: input_parameter (datatype) - (default_value) Definition
 
 Config parameters for this building block:
-* **water_type** (*string*): (spce) Water molecule type. .
-* **force_field** (*string*): (amber99sb-ildn) Force field to be used during the conversion.  .
-* **ignh** (*boolean*): (False) Should pdb2gmx ignore the hidrogens in the original structure..
-* **lys** (*array*): (None) Lysine protonation states for each chain in the input pdb. Each item of the list should be a string with the protonation states for that chain or empty if the residue is not present in that chain (0: not protonated, 1: protonated)..
-* **arg** (*array*): (None) Arginine protonation states for each chain in the input pdb. Each item of the list should be a string with the protonation states for that chain or empty if the residue is not present in that chain (0: not protonated, 1: protonated)..
-* **asp** (*array*): (None) Aspartic acid protonation states for each chain in the input pdb. Each item of the list should be a string with the protonation states for that chain or empty if the residue is not present in that chain (0: not protonated, 1: protonated)..
-* **glu** (*array*): (None) Glutamic acid protonation states for each chain in the input pdb. Each item of the list should be a string with the protonation states for that chain or empty if the residue is not present in that chain (0: not protonated, 1: protonated)..
-* **gln** (*array*): (None) Glutamine protonation states for each chain in the input pdb. Each item of the list should be a string with the protonation states for that chain or empty if the residue is not present in that chain (0: not protonated, 1: protonated)..
-* **his** (*array*): (None) Histidine protonation states for each chain in the input pdb. Each item of the list should be a string with the protonation states for that chain or empty if the residue is not present in that chain. Make sure residues are named HIS (0: HID, 1: HIE, 2: HIP, 3: HIS1)..
-* **merge** (*boolean*): (False) Merge all chains into a single molecule..
-* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable..
-* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary..
-* **remove_tmp** (*boolean*): (True) Remove temporal files..
-* **restart** (*boolean*): (False) Do not execute if output files exist..
-* **sandbox_path** (*string*): (./) Parent path to the sandbox directory..
-* **container_path** (*string*): (None) Path to the binary executable of your container..
-* **container_image** (*string*): (gromacs/gromacs:latest) Container Image identifier..
-* **container_volume_path** (*string*): (/data) Path to an internal directory in the container..
-* **container_working_dir** (*string*): (None) Path to the internal CWD in the container..
-* **container_user_id** (*string*): (None) User number id to be mapped inside the container..
-* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell..
+* **water_type** (*string*): (spce) Water molecule type. 
+* **force_field** (*string*): (amber99sb-ildn) Force field to be used during the conversion.  
+* **ignh** (*boolean*): (False) Should pdb2gmx ignore the hydrogens in the original structure.
+* **lys** (*array*): (None) Lysine protonation states for each chain in the input pdb. Each item of the list should be a string with the protonation states for that chain or empty if the residue is not present in that chain (0: not protonated, 1: protonated).
+* **arg** (*array*): (None) Arginine protonation states for each chain in the input pdb. Each item of the list should be a string with the protonation states for that chain or empty if the residue is not present in that chain (0: not protonated, 1: protonated).
+* **asp** (*array*): (None) Aspartic acid protonation states for each chain in the input pdb. Each item of the list should be a string with the protonation states for that chain or empty if the residue is not present in that chain (0: not protonated, 1: protonated).
+* **glu** (*array*): (None) Glutamic acid protonation states for each chain in the input pdb. Each item of the list should be a string with the protonation states for that chain or empty if the residue is not present in that chain (0: not protonated, 1: protonated).
+* **gln** (*array*): (None) Glutamine protonation states for each chain in the input pdb. Each item of the list should be a string with the protonation states for that chain or empty if the residue is not present in that chain (0: not protonated, 1: protonated).
+* **his** (*array*): (None) Histidine protonation states for each chain in the input pdb. Each item of the list should be a string with the protonation states for that chain or empty if the residue is not present in that chain. Make sure residues are named HIS (0: HID, 1: HIE, 2: HIP, 3: HIS1).
+* **merge** (*boolean*): (False) Merge all chains into a single molecule.
+* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable.
+* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary.
+* **remove_tmp** (*boolean*): (True) Remove temporal files.
+* **restart** (*boolean*): (False) Do not execute if output files exist.
+* **sandbox_path** (*string*): (./) Parent path to the sandbox directory.
+* **container_path** (*string*): (None) Path to the binary executable of your container.
+* **container_image** (*string*): (gromacs/gromacs:latest) Container Image identifier.
+* **container_volume_path** (*string*): (/data) Path to an internal directory in the container.
+* **container_working_dir** (*string*): (None) Path to the internal CWD in the container.
+* **container_user_id** (*string*): (None) User number id to be mapped inside the container.
+* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell.
 ### YAML
 #### [Common config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_pdb2gmx.yml)
 ```python
@@ -1183,18 +1396,20 @@ properties:
 #### [Docker config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_pdb2gmx_docker.yml)
 ```python
 properties:
-  container_image: gromacs/gromacs:2025.2
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
   his: 0 0 1 1 0 0 0
 
 ```
 #### [Singularity config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_pdb2gmx_singularity.yml)
 ```python
 properties:
-  container_image: gromacs.simg
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
   his: 0 0 1 1 0 0 0
 
 ```
@@ -1217,8 +1432,9 @@ pdb2gmx --config config_pdb2gmx.yml --input_pdb_path egfr.pdb --output_gro_path 
   "properties": {
     "his": "0 0 1 1 0 0 0",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/inout"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -1228,8 +1444,9 @@ pdb2gmx --config config_pdb2gmx.yml --input_pdb_path egfr.pdb --output_gro_path 
   "properties": {
     "his": "0 0 1 1 0 0 0",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/inout"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -1253,13 +1470,20 @@ solvate -h
       -h, --help            show this help message and exit
       -c CONFIG, --config CONFIG
                             This file can be a YAML file, JSON file or JSON string
-      --input_solvent_gro_path INPUT_SOLVENT_GRO_PATH
     
     required arguments:
       --input_solute_gro_path INPUT_SOLUTE_GRO_PATH
+                            Path to the input GRO file. Accepted formats: gro, pdb.
       --output_gro_path OUTPUT_GRO_PATH
+                            Path to the output GRO file. Accepted formats: gro, pdb.
       --input_top_zip_path INPUT_TOP_ZIP_PATH
+                            Path the input TOP topology in zip format. Accepted formats: zip.
       --output_top_zip_path OUTPUT_TOP_ZIP_PATH
+                            Path the output topology in zip format. Accepted formats: zip.
+    
+    optional arguments:
+      --input_solvent_gro_path INPUT_SOLVENT_GRO_PATH
+                            (spc216.gro) Path to the GRO file containing the structure of the solvent. Accepted formats: gro.
 ### I / O Arguments
 Syntax: input_argument (datatype) : Definition
 
@@ -1273,18 +1497,18 @@ Config input / output arguments for this building block:
 Syntax: input_parameter (datatype) - (default_value) Definition
 
 Config parameters for this building block:
-* **shell** (*number*): (0.0) Thickness in nanometers of optional water layer around solute..
-* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable..
-* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary..
-* **remove_tmp** (*boolean*): (True) Remove temporal files..
-* **restart** (*boolean*): (False) Do not execute if output files exist..
-* **sandbox_path** (*string*): (./) Parent path to the sandbox directory..
-* **container_path** (*string*): (None) Path to the binary executable of your container..
-* **container_image** (*string*): (gromacs/gromacs:latest) Container Image identifier..
-* **container_volume_path** (*string*): (/data) Path to an internal directory in the container..
-* **container_working_dir** (*string*): (None) Path to the internal CWD in the container..
-* **container_user_id** (*string*): (None) User number id to be mapped inside the container..
-* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell..
+* **shell** (*number*): (0.0) Thickness in nanometers of optional water layer around solute.
+* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable.
+* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary.
+* **remove_tmp** (*boolean*): (True) Remove temporal files.
+* **restart** (*boolean*): (False) Do not execute if output files exist.
+* **sandbox_path** (*string*): (./) Parent path to the sandbox directory.
+* **container_path** (*string*): (None) Path to the binary executable of your container.
+* **container_image** (*string*): (gromacs/gromacs:latest) Container Image identifier.
+* **container_volume_path** (*string*): (/data) Path to an internal directory in the container.
+* **container_working_dir** (*string*): (None) Path to the internal CWD in the container.
+* **container_user_id** (*string*): (None) User number id to be mapped inside the container.
+* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell.
 ### YAML
 #### [Common config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_solvate.yml)
 ```python
@@ -1296,17 +1520,23 @@ properties:
 #### [Docker config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_solvate_docker.yml)
 ```python
 properties:
-  container_image: gromacs/gromacs:2025.2
+  binary_path: gmx
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
+  restart: 'False'
 
 ```
 #### [Singularity config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_solvate_singularity.yml)
 ```python
 properties:
-  container_image: gromacs.simg
+  binary_path: gmx
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
+  restart: 'False'
 
 ```
 #### Command line
@@ -1327,9 +1557,12 @@ solvate --config config_solvate.yml --input_solute_gro_path solvate.gro --output
 ```python
 {
   "properties": {
+    "binary_path": "gmx",
+    "restart": "False",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/inout"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -1337,9 +1570,12 @@ solvate --config config_solvate.yml --input_solute_gro_path solvate.gro --output
 ```python
 {
   "properties": {
+    "binary_path": "gmx",
+    "restart": "False",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/inout"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -1355,9 +1591,9 @@ Command:
 ```python
 trjcat -h
 ```
-    usage: trjcat [-h] [-c CONFIG] --input_trj_zip_path INPUT_TRJ_ZIP_PATH --output_trj_path OUTPUT_TRJ_PATH
+    usage: trjcat [-h] [-c CONFIG] -i INPUT_TRJ_ZIP_PATH -o OUTPUT_TRJ_PATH
     
-    Wrapper of the GROMACS gmx trjcat module.
+    Wrapper for the GROMACS trjcat module.
     
     options:
       -h, --help            show this help message and exit
@@ -1365,8 +1601,10 @@ trjcat -h
                             This file can be a YAML file, JSON file or JSON string
     
     required arguments:
-      --input_trj_zip_path INPUT_TRJ_ZIP_PATH
-      --output_trj_path OUTPUT_TRJ_PATH
+      -i INPUT_TRJ_ZIP_PATH, --input_trj_zip_path INPUT_TRJ_ZIP_PATH
+                            Path the input GROMACS trajectories (xtc, trr, cpt, gro, pdb, tng) to concatenate in zip format. Accepted formats: zip.
+      -o OUTPUT_TRJ_PATH, --output_trj_path OUTPUT_TRJ_PATH
+                            Path to the output trajectory file. Accepted formats: pdb, gro, xtc, trr, tng.
 ### I / O Arguments
 Syntax: input_argument (datatype) : Definition
 
@@ -1377,18 +1615,18 @@ Config input / output arguments for this building block:
 Syntax: input_parameter (datatype) - (default_value) Definition
 
 Config parameters for this building block:
-* **concatenate** (*boolean*): (True) Only concatenate the files without removal of frames with identical timestamps..
-* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable..
-* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary..
-* **remove_tmp** (*boolean*): (True) Remove temporal files..
-* **restart** (*boolean*): (False) Do not execute if output files exist..
-* **sandbox_path** (*string*): (./) Parent path to the sandbox directory..
-* **container_path** (*string*): (None) Path to the binary executable of your container..
-* **container_image** (*string*): (None) Container Image identifier..
-* **container_volume_path** (*string*): (/data) Path to an internal directory in the container..
-* **container_working_dir** (*string*): (None) Path to the internal CWD in the container..
-* **container_user_id** (*string*): (None) User number id to be mapped inside the container..
-* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell..
+* **concatenate** (*boolean*): (True) Only concatenate the files without removal of frames with identical timestamps.
+* **gmx_lib** (*string*): (None) Path set GROMACS GMXLIB environment variable.
+* **binary_path** (*string*): (gmx) Path to the GROMACS executable binary.
+* **remove_tmp** (*boolean*): (True) Remove temporal files.
+* **restart** (*boolean*): (False) Do not execute if output files exist.
+* **sandbox_path** (*string*): (./) Parent path to the sandbox directory.
+* **container_path** (*string*): (None) Path to the binary executable of your container.
+* **container_image** (*string*): (None) Container Image identifier.
+* **container_volume_path** (*string*): (/data) Path to an internal directory in the container.
+* **container_working_dir** (*string*): (None) Path to the internal CWD in the container.
+* **container_user_id** (*string*): (None) User number id to be mapped inside the container.
+* **container_shell_path** (*string*): (/bin/bash) Path to the binary executable of the container shell.
 ### YAML
 #### [Common config file](https://github.com/bioexcel/biobb_gromacs/blob/master/biobb_gromacs/test/data/config/config_trjcat.yml)
 ```python
@@ -1401,9 +1639,10 @@ properties:
 ```python
 properties:
   binary_path: gmx
-  container_image: gromacs/gromacs:2025.2
+  container_image: quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: docker
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
   restart: 'False'
 
 ```
@@ -1411,9 +1650,10 @@ properties:
 ```python
 properties:
   binary_path: gmx
-  container_image: gromacs.simg
+  container_image: https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0
   container_path: singularity
-  container_volume_path: /inout
+  container_volume_path: /tmp
+  container_working_dir: /tmp
   restart: 'False'
 
 ```
@@ -1438,8 +1678,9 @@ trjcat --config config_trjcat.yml --input_trj_zip_path trjcat.zip --output_trj_p
     "binary_path": "gmx",
     "restart": "False",
     "container_path": "docker",
-    "container_image": "gromacs/gromacs:2025.2",
-    "container_volume_path": "/inout"
+    "container_image": "quay.io/biocontainers/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```
@@ -1450,8 +1691,9 @@ trjcat --config config_trjcat.yml --input_trj_zip_path trjcat.zip --output_trj_p
     "binary_path": "gmx",
     "restart": "False",
     "container_path": "singularity",
-    "container_image": "gromacs.simg",
-    "container_volume_path": "/inout"
+    "container_image": "https://depot.galaxyproject.org/singularity/biobb_gromacs:5.2.1--pyhdfd78af_0",
+    "container_volume_path": "/tmp",
+    "container_working_dir": "/tmp"
   }
 }
 ```

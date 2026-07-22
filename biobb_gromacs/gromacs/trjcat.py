@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 
 """Module containing the Trjcat class and the command line interface."""
-import shutil
-import argparse
 from typing import Optional
-from pathlib import Path
+from pathlib import PurePath
 from biobb_common.generic.biobb_object import BiobbObject
-from biobb_common.configuration import settings
 from biobb_common.tools import file_utils as fu
 from biobb_common.tools.file_utils import launchlogger
 from biobb_gromacs.gromacs.common import get_gromacs_version
@@ -98,20 +95,20 @@ class Trjcat(BiobbObject):
             return 0
         self.stage_files()
 
-        # Unzip trajectory bundle
-        trj_dir: str = fu.create_unique_dir()
-        trj_list: list[str] = fu.unzip_list(self.input_trj_zip_path, trj_dir, self.out_log)
+        # Unzip trajectory bundle directly into unique_dir so basenames work after cd
+        trj_list: list[str] = fu.unzip_list(self.input_trj_zip_path, self.stage_io_dict.get("unique_dir", ""), self.out_log)
+        trj_list = [PurePath(p).name for p in trj_list]
 
-        # Copy trajectories to container
         if self.container_path:
-            for index, trajectory_file_path in enumerate(trj_list):
-                shutil.copy2(trajectory_file_path, self.stage_io_dict.get("unique_dir", ""))
-                trj_list[index] = str(Path(self.container_volume_path).joinpath(Path(trajectory_file_path).name))
+            working_dir = self.container_volume_path if self.container_volume_path else "/data"
+        else:
+            working_dir = self.stage_io_dict.get('unique_dir', '')
 
         # Create command line
-        self.cmd = [self.binary_path, 'trjcat',
+        self.cmd = ["cd", working_dir, ";",
+                    self.binary_path, 'trjcat',
                     '-f', " ".join(trj_list),
-                    '-o', self.stage_io_dict["out"]["output_trj_path"]]
+                    '-o', PurePath(self.stage_io_dict["out"]["output_trj_path"]).name]
 
         if self.concatenate:
             self.cmd.append('-cat')
@@ -127,9 +124,6 @@ class Trjcat(BiobbObject):
         self.copy_to_host()
 
         # Remove temporal files
-        self.tmp_files.extend([
-            trj_dir
-        ])
         self.remove_tmp_files()
 
         self.check_arguments(output_files_created=True, raise_exception=False)
@@ -139,32 +133,11 @@ class Trjcat(BiobbObject):
 def trjcat(input_trj_zip_path: str, output_trj_path: str, properties: Optional[dict] = None, **kwargs) -> int:
     """Create :class:`Trjcat <gromacs.trjcat.Trjcat>` class and
     execute the :meth:`launch() <gromacs.trjcat.Trjcat.launch>` method."""
-
-    return Trjcat(input_trj_zip_path=input_trj_zip_path, output_trj_path=output_trj_path,
-                  properties=properties, **kwargs).launch()
+    return Trjcat(**dict(locals())).launch()
 
 
 trjcat.__doc__ = Trjcat.__doc__
-
-
-def main():
-    """Command line execution of this building block. Please check the command line documentation."""
-    parser = argparse.ArgumentParser(description="Wrapper of the GROMACS gmx trjcat module.",
-                                     formatter_class=lambda prog: argparse.RawTextHelpFormatter(prog, width=99999))
-    parser.add_argument('-c', '--config', required=False, help="This file can be a YAML file, JSON file or JSON string")
-
-    # Specific args of each building block
-    required_args = parser.add_argument_group('required arguments')
-    required_args.add_argument('--input_trj_zip_path', required=True)
-    required_args.add_argument('--output_trj_path', required=True)
-
-    args = parser.parse_args()
-    config = args.config if args.config else None
-    properties = settings.ConfReader(config=config).get_prop_dic()
-
-    # Specific call of each building block
-    trjcat(input_trj_zip_path=args.input_trj_zip_path, output_trj_path=args.output_trj_path,
-           properties=properties)
+main = Trjcat.get_main(trjcat, "Wrapper for the GROMACS trjcat module.")
 
 
 if __name__ == '__main__':

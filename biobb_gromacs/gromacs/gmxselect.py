@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
 """Module containing the Select class and the command line interface."""
-import argparse
 from typing import Optional
-from pathlib import Path
+from pathlib import Path, PurePath
 from biobb_common.generic.biobb_object import BiobbObject
-from biobb_common.configuration import settings
 from biobb_common.tools import file_utils as fu
 from biobb_common.tools.file_utils import launchlogger
 from biobb_gromacs.gromacs.common import get_gromacs_version
@@ -98,18 +96,28 @@ class Gmxselect(BiobbObject):
             return 0
         self.stage_files()
 
-        self.cmd = [self.binary_path, 'select',
-                    '-s', self.stage_io_dict["in"]["input_structure_path"],
-                    '-on', self.stage_io_dict["out"]["output_ndx_path"]
+        if self.container_path:
+            working_dir = self.container_volume_path if self.container_volume_path else "/data"
+        else:
+            working_dir = self.stage_io_dict.get('unique_dir', '')
+
+        selection_file_path = Path(str(self.stage_io_dict.get("unique_dir", ""))).joinpath("gmxselect_selection.dat")
+        with open(selection_file_path, "w") as selection_file:
+            selection_file.write(f"{self.selection}\n")
+
+        self.cmd = ["cd", working_dir, ";",
+                    self.binary_path, 'select',
+                    '-s', PurePath(self.stage_io_dict["in"]["input_structure_path"]).name,
+                    '-on', PurePath(self.stage_io_dict["out"]["output_ndx_path"]).name
                     ]
 
         if self.stage_io_dict["in"].get("input_ndx_path") and Path(
                 self.stage_io_dict["in"].get("input_ndx_path")).exists():
             self.cmd.append('-n')
-            self.cmd.append(self.stage_io_dict["in"].get("input_ndx_path"))
+            self.cmd.append(PurePath(self.stage_io_dict["in"].get("input_ndx_path")).name)
 
-        self.cmd.append('-select')
-        self.cmd.append("\'"+self.selection+"\'")
+        self.cmd.append('-sf')
+        self.cmd.append(PurePath(selection_file_path).name)
 
         if self.gmx_lib:
             self.env_vars_dict['GMXLIB'] = self.gmx_lib
@@ -130,7 +138,7 @@ class Gmxselect(BiobbObject):
                             out_ndx_file.write(line)
 
         # Remove temporal files
-        # self.tmp_files.append(self.stage_io_dict.get("unique_dir", ''))
+        self.tmp_files.append(str(selection_file_path))
         self.remove_tmp_files()
 
         self.check_arguments(output_files_created=True, raise_exception=False)
@@ -142,36 +150,11 @@ def gmxselect(input_structure_path: str, output_ndx_path: str,
               **kwargs) -> int:
     """Create :class:`Gmxselect <gromacs.gmxselect.Gmxselect>` class and
     execute the :meth:`launch() <gromacs.gmxselect.Gmxselect.launch>` method."""
-    return Gmxselect(input_structure_path=input_structure_path,
-                     output_ndx_path=output_ndx_path,
-                     input_ndx_path=input_ndx_path,
-                     properties=properties, **kwargs).launch()
+    return Gmxselect(**dict(locals())).launch()
 
 
-    gmxselect.__doc__ = Gmxselect.__doc__
-
-
-def main():
-    """Command line execution of this building block. Please check the command line documentation."""
-    parser = argparse.ArgumentParser(description="Wrapper for the GROMACS select module.",
-                                     formatter_class=lambda prog: argparse.RawTextHelpFormatter(prog, width=99999))
-    parser.add_argument('-c', '--config', required=False, help="This file can be a YAML file, JSON file or JSON string")
-
-    # Specific args of each building block
-    required_args = parser.add_argument_group('required arguments')
-    required_args.add_argument('--input_structure_path', required=True)
-    required_args.add_argument('--output_ndx_path', required=True)
-    parser.add_argument('--input_ndx_path', required=False)
-
-    args = parser.parse_args()
-    config = args.config if args.config else None
-    properties = settings.ConfReader(config=config).get_prop_dic()
-
-    # Specific call of each building block
-    gmxselect(input_structure_path=args.input_structure_path,
-              output_ndx_path=args.output_ndx_path,
-              input_ndx_path=args.input_ndx_path,
-              properties=properties)
+gmxselect.__doc__ = Gmxselect.__doc__
+main = Gmxselect.get_main(gmxselect, "Wrapper for the GROMACS select module.")
 
 
 if __name__ == '__main__':

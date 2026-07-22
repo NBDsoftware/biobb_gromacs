@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
 """Module containing the Pdb2gmx class and the command line interface."""
-import os
-import argparse
 from typing import Optional
+from pathlib import Path, PurePath
 from biobb_common.generic.biobb_object import BiobbObject
-from biobb_common.configuration import settings
 from biobb_common.tools import file_utils as fu
 from biobb_common.tools.file_utils import launchlogger
 from biobb_gromacs.gromacs.common import get_gromacs_version
@@ -24,7 +22,7 @@ class Pdb2gmx(BiobbObject):
         properties (dict - Python dictionary object containing the tool parameters, not input/output files):
             * **water_type** (*str*) - ("spce") Water molecule type. Values: spc, spce, tip3p, tip4p, tip5p, tips3p.
             * **force_field** (*str*) - ("amber99sb-ildn") Force field to be used during the conversion.  Values: gromos45a3, charmm27, gromos53a6, amber96, amber99, gromos43a2, gromos54a7, gromos43a1, amberGS, gromos53a5, amber99sb, amber03, amber99sb-ildn, oplsaa, amber94, amber99sb-star-ildn-mut.
-            * **ignh** (*bool*) - (False) Should pdb2gmx ignore the hidrogens in the original structure.
+            * **ignh** (*bool*) - (False) Should pdb2gmx ignore the hydrogens in the original structure.
             * **lys** (*list*) - (None) Lysine protonation states for each chain in the input pdb. Each item of the list should be a string with the protonation states for that chain or empty if the residue is not present in that chain (0: not protonated, 1: protonated).
             * **arg** (*list*) - (None) Arginine protonation states for each chain in the input pdb. Each item of the list should be a string with the protonation states for that chain or empty if the residue is not present in that chain (0: not protonated, 1: protonated).
             * **asp** (*list*) - (None) Aspartic acid protonation states for each chain in the input pdb. Each item of the list should be a string with the protonation states for that chain or empty if the residue is not present in that chain (0: not protonated, 1: protonated).
@@ -157,10 +155,16 @@ class Pdb2gmx(BiobbObject):
         internal_top_name = fu.create_name(prefix=self.prefix, step=self.step, name=self.internal_top_name)
         internal_itp_name = fu.create_name(prefix=self.prefix, step=self.step, name=self.internal_itp_name)
 
+        if self.container_path:
+            working_dir = self.container_volume_path if self.container_volume_path else "/data"
+        else:
+            working_dir = self.stage_io_dict.get('unique_dir', '')
+
         # Create command line
-        self.cmd = [self.binary_path, "pdb2gmx",
-                    "-f", self.stage_io_dict["in"]["input_pdb_path"],
-                    "-o", self.stage_io_dict["out"]["output_gro_path"],
+        self.cmd = ["cd", working_dir, ";",
+                    self.binary_path, "pdb2gmx",
+                    "-f", PurePath(self.stage_io_dict["in"]["input_pdb_path"]).name,
+                    "-o", PurePath(self.stage_io_dict["out"]["output_gro_path"]).name,
                     "-p", internal_top_name,
                     "-water", self.water_type,
                     "-ff", self.force_field,
@@ -186,7 +190,7 @@ class Pdb2gmx(BiobbObject):
 
         if stdin_content:
             self.cmd.append('<')
-            self.cmd.append(self.stage_io_dict["in"]["stdin_file_path"])
+            self.cmd.append(PurePath(self.stage_io_dict["in"]["stdin_file_path"]).name)
 
         if self.gmx_lib:
             self.env_vars_dict['GMXLIB'] = self.gmx_lib
@@ -197,8 +201,7 @@ class Pdb2gmx(BiobbObject):
         # Copy files to host
         self.copy_to_host()
 
-        if self.container_path:
-            internal_top_name = os.path.join(self.stage_io_dict.get("unique_dir", ""), internal_top_name)
+        internal_top_name = str(Path(self.stage_io_dict.get("unique_dir", "")).joinpath(internal_top_name))
 
         # zip topology
         fu.log('Compressing topology to: %s' % self.io_dict["out"]["output_top_zip_path"], self.out_log,
@@ -250,34 +253,11 @@ def pdb2gmx(input_pdb_path: str, output_gro_path: str, output_top_zip_path: str,
             properties: Optional[dict] = None, **kwargs) -> int:
     """Create :class:`Pdb2gmx <gromacs.pdb2gmx.Pdb2gmx>` class and
     execute the :meth:`launch() <gromacs.pdb2gmx.Pdb2gmx.launch>` method."""
-
-    return Pdb2gmx(input_pdb_path=input_pdb_path, output_gro_path=output_gro_path,
-                   output_top_zip_path=output_top_zip_path, properties=properties,
-                   **kwargs).launch()
+    return Pdb2gmx(**dict(locals())).launch()
 
 
 pdb2gmx.__doc__ = Pdb2gmx.__doc__
-
-
-def main():
-    """Command line execution of this building block. Please check the command line documentation."""
-    parser = argparse.ArgumentParser(description="Wrapper of the GROMACS pdb2gmx module.",
-                                     formatter_class=lambda prog: argparse.RawTextHelpFormatter(prog, width=99999))
-    parser.add_argument('-c', '--config', required=False, help="This file can be a YAML file, JSON file or JSON string")
-
-    # Specific args of each building block
-    required_args = parser.add_argument_group('required arguments')
-    required_args.add_argument('--input_pdb_path', required=True)
-    required_args.add_argument('--output_gro_path', required=True)
-    required_args.add_argument('--output_top_zip_path', required=True)
-
-    args = parser.parse_args()
-    config = args.config if args.config else None
-    properties = settings.ConfReader(config=config).get_prop_dic()
-
-    # Specific call of each building block
-    pdb2gmx(input_pdb_path=args.input_pdb_path, output_gro_path=args.output_gro_path,
-            output_top_zip_path=args.output_top_zip_path, properties=properties)
+main = Pdb2gmx.get_main(pdb2gmx, "Wrapper for the GROMACS pdb2gmx module.")
 
 
 if __name__ == '__main__':
